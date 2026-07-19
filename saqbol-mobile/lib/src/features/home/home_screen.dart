@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/strings.dart';
 import '../auth/auth_controller.dart';
+import '../guard/guard_screen.dart';
 import '../history/history_screen.dart';
 import '../sms/sms_check_screen.dart';
 import '../voice/voice_screen.dart';
@@ -20,7 +21,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final strings = ref.watch(stringsProvider);
-    final titles = [strings.smsTitle, strings.callTitle, strings.tabHistory];
+    final titles = [strings.smsTitle, strings.guardTitle, strings.callTitle, strings.tabHistory];
 
     return Scaffold(
       appBar: AppBar(
@@ -41,6 +42,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         index: _index,
         children: const [
           SmsCheckScreen(),
+          GuardScreen(),
           VoiceScreen(),
           HistoryScreen(),
         ],
@@ -50,6 +52,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onDestinationSelected: (value) => setState(() => _index = value),
         destinations: [
           NavigationDestination(icon: const Icon(Icons.sms_outlined), label: strings.tabSms),
+          NavigationDestination(icon: const Icon(Icons.shield_outlined), label: strings.tabGuard),
           NavigationDestination(icon: const Icon(Icons.mic_none), label: strings.tabCall),
           NavigationDestination(icon: const Icon(Icons.history), label: strings.tabHistory),
         ],

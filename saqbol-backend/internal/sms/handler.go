@@ -18,6 +18,7 @@ func NewHandler(service *Service) *Handler {
 
 func (h *Handler) Register(router gin.IRoutes) {
 	router.POST("/sms/check", h.check)
+	router.POST("/sms/check/batch", h.checkBatch)
 }
 
 func (h *Handler) check(c *gin.Context) {
@@ -34,4 +35,14 @@ func (h *Handler) check(c *gin.Context) {
 	}
 
 	httpx.OK(c, response)
+}
+
+func (h *Handler) checkBatch(c *gin.Context) {
+	var req BatchCheckRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		httpx.Error(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	httpx.OK(c, h.service.CheckBatch(c.Request.Context(), httpx.UserID(c), req))
 }
