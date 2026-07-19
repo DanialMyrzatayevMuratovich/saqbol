@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../features/auth/auth_repository.dart';
+import '../features/guard/sms_reader.dart';
 import '../features/history/history_repository.dart';
 import '../features/reports/reports_repository.dart';
 import '../features/sms/sms_repository.dart';
@@ -41,6 +42,10 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 
 final smsRepositoryProvider = Provider<SmsRepository>((ref) {
   return SmsRepository(ref.watch(dioProvider));
+});
+
+final smsReaderProvider = Provider<SmsReader>((ref) {
+  return SmsReader();
 });
 
 final historyRepositoryProvider = Provider<HistoryRepository>((ref) {

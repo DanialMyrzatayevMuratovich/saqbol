@@ -18,6 +18,37 @@ func NewService(classifier ml.Classifier, dataStore *store.Store) *Service {
 	return &Service{classifier: classifier, store: dataStore}
 }
 
+// CheckBatch classifies each message independently. A failing message yields an
+// error entry instead of aborting the batch, so a partial inbox scan still
+// returns everything it managed to classify.
+func (s *Service) CheckBatch(ctx context.Context, userID string, req BatchCheckRequest) BatchCheckResponse {
+	results := make([]BatchCheckResult, 0, len(req.Messages))
+	for _, item := range req.Messages {
+		if ctx.Err() != nil {
+			break
+		}
+
+		response, err := s.Check(ctx, userID, CheckRequest{
+			Text:         item.Text,
+			SourceNumber: item.SourceNumber,
+		})
+		if err != nil {
+			results = append(results, BatchCheckResult{
+				ExternalID: item.ExternalID,
+				Error:      "failed to check message",
+			})
+			continue
+		}
+
+		results = append(results, BatchCheckResult{
+			ExternalID:    item.ExternalID,
+			CheckResponse: response,
+		})
+	}
+
+	return BatchCheckResponse{Results: results}
+}
+
 func (s *Service) Check(ctx context.Context, userID string, req CheckRequest) (CheckResponse, error) {
 	result, err := s.classifier.Classify(ctx, ml.Request{Text: req.Text, Channel: ml.ChannelSMS})
 	if err != nil {
