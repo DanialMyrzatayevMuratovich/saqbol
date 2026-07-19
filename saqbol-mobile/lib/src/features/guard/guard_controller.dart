@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
 import '../sms/sms_models.dart';
+import 'call_guard.dart';
 import 'guard_background.dart';
 import 'guard_notifications.dart';
 import 'inbox_message.dart';
@@ -18,6 +19,7 @@ class GuardState {
     this.scanned = 0,
     this.total = 0,
     this.findings = const [],
+    this.callGuard = false,
     this.error,
   });
 
@@ -33,12 +35,16 @@ class GuardState {
   final List<SmsCheckResult> findings;
   final String? error;
 
+  /// True when the app holds the Android call-screening role.
+  final bool callGuard;
+
   GuardState copyWith({
     GuardStatus? status,
     bool? watching,
     int? scanned,
     int? total,
     List<SmsCheckResult>? findings,
+    bool? callGuard,
     String? error,
   }) {
     return GuardState(
@@ -47,6 +53,7 @@ class GuardState {
       scanned: scanned ?? this.scanned,
       total: total ?? this.total,
       findings: findings ?? this.findings,
+      callGuard: callGuard ?? this.callGuard,
       error: error,
     );
   }
@@ -124,6 +131,24 @@ class GuardController extends Notifier<GuardState> {
       onBackgroundMessage: handleBackgroundSms,
     );
     state = state.copyWith(watching: true);
+  }
+
+  /// Hands the app the system call-screening role and mirrors the credentials
+  /// the native service needs to query number reputation.
+  Future<void> enableCallGuard() async {
+    final token = await ref.read(tokenStorageProvider).readAccess();
+    if (token == null) return;
+
+    await CallGuard.syncCredentials(
+      token: token,
+      apiBaseUrl: ref.read(appConfigProvider).apiPrefix,
+    );
+    await CallGuard.requestRole();
+    state = state.copyWith(callGuard: await CallGuard.isEnabled());
+  }
+
+  Future<void> refreshCallGuard() async {
+    state = state.copyWith(callGuard: await CallGuard.isEnabled());
   }
 
   Future<void> _checkIncoming(InboxMessage message) async {
