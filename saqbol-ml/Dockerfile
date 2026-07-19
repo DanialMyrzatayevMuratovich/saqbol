@@ -10,7 +10,8 @@ COPY app ./app
 COPY training ./training
 COPY data ./data
 
-RUN python -m grpc_tools.protoc \
+RUN mkdir -p app/generated \
+    && python -m grpc_tools.protoc \
         -I proto/ml/v1 \
         --python_out=app/generated \
         --grpc_python_out=app/generated \
