@@ -1,0 +1,36 @@
+.DS_Store
+*.log
+
+# env files (keep .env.example)
+.env
+.env.local
+**/.env
+**/.env.local
+
+# node / next
+node_modules/
+.next/
+out/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+saqbol-ml/models/*.joblib
+saqbol-ml/models/*.json
+saqbol-ml/app/generated/
+
+# go
+saqbol-backend/bin/
+
+# flutter
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# ide
+.idea/
+.vscode/
+*.iml

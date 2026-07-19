@@ -1,0 +1,68 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: saqbol
+      POSTGRES_PASSWORD: saqbol
+      POSTGRES_DB: saqbol
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saqbol -d saqbol"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redisdata:/data
+
+  ml:
+    build: ./saqbol-ml
+    environment:
+      HTTP_PORT: 8000
+      GRPC_PORT: 9090
+    ports:
+      - "8000:8000"
+
+  backend:
+    build: ./saqbol-backend
+    environment:
+      HTTP_PORT: 8080
+      GIN_MODE: release
+      DATABASE_URL: postgres://saqbol:saqbol@postgres:5432/saqbol?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+      JWT_ACCESS_SECRET: change_me_access
+      JWT_REFRESH_SECRET: change_me_refresh
+      ACCESS_TOKEN_TTL: 15m
+      REFRESH_TOKEN_TTL: 168h
+      ML_MOCK: "false"
+      ML_GRPC_ADDR: ml:9090
+      SCAM_THRESHOLD: "0.8"
+      SUSPICIOUS_THRESHOLD: "0.45"
+      RATE_LIMIT_PER_MIN: "60"
+      ADMIN_PHONES: ""
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      ml:
+        condition: service_started
+
+  web:
+    build:
+      context: ./saqbol-web
+      args:
+        API_BASE_URL: http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  redisdata:

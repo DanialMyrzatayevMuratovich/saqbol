@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package saqbol.ml.v1;
+
+option go_package = "github.com/saqbol/backend/proto/ml/v1;mlv1";
+
+service ScamClassifier {
+  rpc Classify(ClassifyRequest) returns (ClassifyResponse);
+  rpc ClassifyStream(stream ClassifyRequest) returns (stream ClassifyResponse);
+}
+
+message ClassifyRequest {
+  string text = 1;
+  string channel = 2;
+  string locale = 3;
+}
+
+message ClassifyResponse {
+  string verdict = 1;
+  double probability = 2;
+  string category = 3;
+  repeated string triggers = 4;
+  string advice = 5;
+  int32 latency_ms = 6;
+  string model_version = 7;
+}

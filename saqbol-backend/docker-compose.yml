@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: saqbol_postgres
+    environment:
+      POSTGRES_USER: saqbol
+      POSTGRES_PASSWORD: saqbol
+      POSTGRES_DB: saqbol
+    ports:
+      - "55432:5432"
+    volumes:
+      - saqbol_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saqbol -d saqbol"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: saqbol_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - saqbol_redisdata:/data
+
+volumes:
+  saqbol_pgdata:
+  saqbol_redisdata:
