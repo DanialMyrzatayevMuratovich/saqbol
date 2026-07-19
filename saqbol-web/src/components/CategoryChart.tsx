@@ -24,19 +24,46 @@ export function CategoryChart({ data }: CategoryChartProps) {
   }));
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-4 text-lg font-semibold text-slate-900">
-        Категории мошенничества
-      </h2>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={chartData} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-          <XAxis dataKey="name" tick={{ fontSize: 12 }} interval={0} angle={-15} height={50} textAnchor="end" />
-          <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-          <Tooltip cursor={{ fill: "#f1f5f9" }} />
-          <Bar dataKey="count" fill="#1565c0" radius={[6, 6, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+    <div className="rounded-2xl border border-border bg-surface p-5">
+      <h2 className="mb-4 text-lg font-semibold">Категории мошенничества</h2>
+
+      {chartData.length === 0 ? (
+        <p className="py-20 text-center text-muted">Пока нет данных</p>
+      ) : (
+        <ResponsiveContainer width="100%" height={260}>
+          <BarChart data={chartData} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+            <XAxis
+              dataKey="name"
+              tick={{ fontSize: 12, fill: "var(--muted)" }}
+              interval={0}
+              angle={-15}
+              height={50}
+              textAnchor="end"
+              axisLine={{ stroke: "var(--border)" }}
+              tickLine={false}
+            />
+            <YAxis
+              allowDecimals={false}
+              tick={{ fontSize: 12, fill: "var(--muted)" }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip
+              cursor={{ fill: "var(--surface-raised)" }}
+              contentStyle={{
+                background: "var(--surface-raised)",
+                border: "1px solid var(--border)",
+                borderRadius: "0.75rem",
+                color: "var(--foreground)",
+              }}
+              formatter={(value: number) => value.toLocaleString("ru-RU")}
+            />
+            {/* One measure, one series: a single accent hue, never a rainbow. */}
+            <Bar dataKey="count" name="Проверок" fill="var(--accent-strong)" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
 }

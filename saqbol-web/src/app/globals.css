@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
+/*
+ * SaqBol dark theme.
+ *
+ * Verdict colours are not free choices: the trio is validated against the card
+ * surface (#151E32) — inside the OKLCH lightness band, above the chroma floor,
+ * >= 3:1 contrast. Red/amber separation under deuteranopia is dE 6.1, which is
+ * only permissible with a second encoding, so verdicts always carry a label or
+ * icon and chart segments are separated by a gap — never colour alone.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0b1120;
+  --surface: #151e32;
+  --surface-raised: #1c2740;
+  --border: #24304d;
+
+  --foreground: #e8edf7;
+  --muted: #94a3c4;
+
+  --accent: #22d3ee;
+  --accent-strong: #06b6d4;
+
+  --verdict-scam: #f43f5e;
+  --verdict-suspicious: #ad7a00;
+  --verdict-safe: #0d9488;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-scam: var(--verdict-scam);
+  --color-suspicious: var(--verdict-suspicious);
+  --color-safe: var(--verdict-safe);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Ambient glow, so a flat dark page does not read as switched off. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 15% -10%, rgb(34 211 238 / 0.08), transparent 60%),
+    radial-gradient(50rem 35rem at 100% 0%, rgb(99 102 241 / 0.07), transparent 55%);
+}
+
+/* Recharts renders its own defaults; pull them onto the theme tokens. */
+.recharts-cartesian-axis-tick text,
+.recharts-legend-item-text {
+  fill: var(--muted);
+  color: var(--muted) !important;
 }

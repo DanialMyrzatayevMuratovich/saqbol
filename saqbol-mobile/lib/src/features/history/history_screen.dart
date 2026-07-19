@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../shared/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -57,7 +59,7 @@ class _HistoryTile extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300),
+        side: BorderSide(color: AppColors.border),
       ),
       child: ListTile(
         leading: CircleAvatar(

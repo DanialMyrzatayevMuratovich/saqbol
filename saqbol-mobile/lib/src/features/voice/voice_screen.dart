@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../shared/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/strings.dart';
@@ -44,17 +46,17 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
             padding: const EdgeInsets.all(14),
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFFD32F2F),
+              color: AppColors.scam,
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Row(
               children: [
-                Icon(Icons.gpp_bad, color: Colors.white),
+                Icon(Icons.gpp_bad, color: AppColors.foreground),
                 SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     'Возможно мошенник! Не диктуйте коды и не переводите деньги.',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    style: TextStyle(color: AppColors.foreground, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -93,7 +95,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
                 state.active
                     ? (state.listening ? strings.listening : strings.sessionActive)
                     : strings.sessionInactive,
-                style: const TextStyle(color: Colors.grey),
+                style: const TextStyle(color: AppColors.muted),
               ),
             ],
           ),
@@ -105,12 +107,12 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
           label: Text(state.active ? strings.stopListening : strings.startListening),
           style: FilledButton.styleFrom(
             minimumSize: const Size.fromHeight(48),
-            backgroundColor: state.active ? const Color(0xFFD32F2F) : null,
+            backgroundColor: state.active ? AppColors.scam : null,
           ),
         ),
         if (state.error != null) ...[
           const SizedBox(height: 10),
-          Text(state.error!, style: const TextStyle(color: Colors.red)),
+          Text(state.error!, style: const TextStyle(color: AppColors.scam)),
         ],
         if (state.triggers.isNotEmpty) ...[
           const SizedBox(height: 20),
@@ -135,7 +137,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: AppColors.surfaceRaised,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(state.transcript),

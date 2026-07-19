@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../shared/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers.dart';
@@ -120,7 +122,7 @@ class _VerdictCardState extends ConsumerState<VerdictCard> {
               const SizedBox(height: 10),
               Text(
                 'Модель: ${result.modelVersion}',
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                style: TextStyle(fontSize: 11, color: AppColors.muted),
               ),
             ],
           ],
@@ -139,7 +141,7 @@ class _VerdictCardState extends ConsumerState<VerdictCard> {
         children: [
           Icon(Icons.check_circle, color: style.color, size: 18),
           const SizedBox(width: 6),
-          Text(strings.feedbackThanks, style: const TextStyle(color: Colors.grey)),
+          Text(strings.feedbackThanks, style: const TextStyle(color: AppColors.muted)),
         ],
       );
     }

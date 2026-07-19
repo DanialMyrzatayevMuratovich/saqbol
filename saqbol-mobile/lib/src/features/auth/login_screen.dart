@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../shared/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/strings.dart';
@@ -62,7 +64,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.shield_moon, size: 64, color: Color(0xFF1565C0)),
+                const Icon(Icons.shield_moon, size: 64, color: AppColors.accent),
                 const SizedBox(height: 12),
                 Text(
                   'SaqBol',
@@ -75,7 +77,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Text(
                   strings.tagline,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.grey),
+                  style: const TextStyle(color: AppColors.muted),
                 ),
                 const SizedBox(height: 32),
                 if (_registerMode)
@@ -109,7 +111,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 if (state.error != null) ...[
                   const SizedBox(height: 12),
-                  Text(state.error!, style: const TextStyle(color: Colors.red)),
+                  Text(state.error!, style: const TextStyle(color: AppColors.scam)),
                 ],
                 const SizedBox(height: 20),
                 FilledButton(
@@ -119,7 +121,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.background),
                         )
                       : Text(_registerMode ? strings.register : strings.login),
                 ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
+
 class VerdictStyle {
   const VerdictStyle({required this.label, required this.color, required this.icon});
 
@@ -12,19 +14,19 @@ class VerdictStyle {
       case 'scam':
         return const VerdictStyle(
           label: 'Мошенничество',
-          color: Color(0xFFD32F2F),
+          color: AppColors.scam,
           icon: Icons.gpp_bad,
         );
       case 'suspicious':
         return const VerdictStyle(
           label: 'Подозрительно',
-          color: Color(0xFFF57C00),
+          color: AppColors.suspicious,
           icon: Icons.warning_amber,
         );
       default:
         return const VerdictStyle(
           label: 'Безопасно',
-          color: Color(0xFF2E7D32),
+          color: AppColors.safe,
           icon: Icons.verified_user,
         );
     }

@@ -17,9 +17,9 @@ const filters = [
 ];
 
 const verdictColor: Record<string, string> = {
-  scam: "text-red-600",
-  suspicious: "text-orange-600",
-  safe: "text-green-700",
+  scam: "text-scam",
+  suspicious: "text-suspicious",
+  safe: "text-safe",
 };
 
 export default function MessagesPage() {
@@ -59,12 +59,12 @@ export default function MessagesPage() {
   }, [load, verdict, router]);
 
   return (
-    <main className="min-h-screen bg-slate-100">
+    <main className="min-h-screen bg-background">
       <NavBar active="/messages" />
 
       <div className="mx-auto max-w-6xl px-6 py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-slate-900">Помеченные сообщения</h1>
+          <h1 className="text-xl font-bold text-foreground">Помеченные сообщения</h1>
           <div className="flex gap-2">
             {filters.map((filter) => (
               <button
@@ -72,8 +72,8 @@ export default function MessagesPage() {
                 onClick={() => setVerdict(filter.value)}
                 className={
                   verdict === filter.value
-                    ? "rounded-lg bg-blue-700 px-3 py-1.5 text-sm font-medium text-white"
-                    : "rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+                    ? "rounded-lg bg-accent px-3 py-1.5 text-sm font-semibold text-background"
+                    : "rounded-lg border border-border px-3 py-1.5 text-sm text-muted hover:bg-surface-raised"
                 }
               >
                 {filter.label}
@@ -82,13 +82,13 @@ export default function MessagesPage() {
           </div>
         </div>
 
-        {loading && <p className="text-slate-500">Загрузка…</p>}
-        {error && <p className="text-red-600">{error}</p>}
+        {loading && <p className="text-muted">Загрузка…</p>}
+        {error && <p className="text-scam">{error}</p>}
 
         {!loading && !error && (
-          <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+          <div className="overflow-x-auto rounded-2xl border border-border bg-surface">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-200 text-slate-500">
+              <thead className="border-b border-border text-muted">
                 <tr>
                   <th className="px-4 py-3">Вердикт</th>
                   <th className="px-4 py-3">Категория</th>
@@ -101,13 +101,13 @@ export default function MessagesPage() {
               <tbody>
                 {items.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
+                    <td colSpan={6} className="px-4 py-8 text-center text-muted">
                       Нет сообщений
                     </td>
                   </tr>
                 ) : (
                   items.map((item) => (
-                    <tr key={item.id} className="border-b border-slate-100">
+                    <tr key={item.id} className="border-b border-border">
                       <td className={`px-4 py-3 font-medium ${verdictColor[item.verdict] ?? ""}`}>
                         {item.verdict}
                       </td>

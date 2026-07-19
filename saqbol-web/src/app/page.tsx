@@ -48,30 +48,30 @@ export default function DashboardPage() {
     : 0;
 
   return (
-    <main className="min-h-screen bg-slate-100">
+    <main className="min-h-screen bg-background">
       <NavBar active="/" />
 
       <div className="mx-auto max-w-6xl px-6 py-8">
         <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-slate-900">Метрики</h1>
+          <h1 className="text-xl font-bold text-foreground">Метрики</h1>
           <button
             onClick={load}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted hover:bg-surface-raised"
           >
             Обновить
           </button>
         </div>
-        {loading && <p className="text-slate-500">Загрузка…</p>}
-        {error && <p className="text-red-600">{error}</p>}
+        {loading && <p className="text-muted">Загрузка…</p>}
+        {error && <p className="text-scam">{error}</p>}
 
         {overview && (
           <>
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
               <StatCard label="Пользователи" value={overview.total_users} />
               <StatCard label="Всего проверок" value={overview.total_messages} />
-              <StatCard label="Мошенничество" value={overview.scam_messages} accent="text-red-600" />
-              <StatCard label="Подозрительно" value={overview.suspicious_messages} accent="text-orange-600" />
-              <StatCard label="Алерты по звонкам" value={overview.alerted_call_sessions} accent="text-red-600" />
+              <StatCard label="Мошенничество" value={overview.scam_messages} accent="text-scam" />
+              <StatCard label="Подозрительно" value={overview.suspicious_messages} accent="text-suspicious" />
+              <StatCard label="Алерты по звонкам" value={overview.alerted_call_sessions} accent="text-scam" />
             </div>
 
             <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">

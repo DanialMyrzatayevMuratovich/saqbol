@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../shared/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/strings.dart';
@@ -68,7 +70,7 @@ class _SmsCheckScreenState extends ConsumerState<SmsCheckScreen> {
               ? const SizedBox(
                   width: 18,
                   height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.background),
                 )
               : const Icon(Icons.shield_outlined),
           label: Text(strings.checkButton),
@@ -81,7 +83,7 @@ class _SmsCheckScreenState extends ConsumerState<SmsCheckScreen> {
           loading: () => const SizedBox.shrink(),
           error: (error, _) => Text(
             error.toString(),
-            style: const TextStyle(color: Colors.red),
+            style: const TextStyle(color: AppColors.scam),
           ),
         ),
       ],

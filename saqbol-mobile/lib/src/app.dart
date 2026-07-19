@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/auth/auth_controller.dart';
 import 'features/auth/login_screen.dart';
 import 'features/home/home_screen.dart';
+import 'shared/app_theme.dart';
 
 class SaqBolApp extends StatelessWidget {
   const SaqBolApp({super.key});
@@ -13,10 +14,7 @@ class SaqBolApp extends StatelessWidget {
     return MaterialApp(
       title: 'SaqBol',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1565C0)),
-        useMaterial3: true,
-      ),
+      theme: buildAppTheme(),
       home: const _AuthGate(),
     );
   }
