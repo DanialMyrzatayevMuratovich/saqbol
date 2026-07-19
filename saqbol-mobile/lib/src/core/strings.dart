@@ -36,6 +36,11 @@ class AppStrings {
   String get guardWatchSubtitle => _kk
       ? 'Келген хабарламалар фонда тексеріледі'
       : 'Входящие сообщения проверяются в фоне';
+  String get guardCallTitle =>
+      _kk ? 'Қоңырауларды тексеру' : 'Проверка звонков';
+  String get guardCallSubtitle => _kk
+      ? 'Кіріс нөмір алаяқтар базасымен салыстырылады'
+      : 'Входящий номер сверяется с базой мошенников';
   String get guardScanButton =>
       _kk ? 'Барлық SMS сканерлеу' : 'Просканировать все SMS';
   String get guardScanFailed =>

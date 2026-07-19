@@ -21,7 +21,9 @@ class _GuardScreenState extends ConsumerState<GuardScreen> {
     super.initState();
     // Permission can be revoked from system settings while the app is alive.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(guardControllerProvider.notifier).refreshPermission();
+      final controller = ref.read(guardControllerProvider.notifier);
+      controller.refreshPermission();
+      controller.refreshCallGuard();
     });
   }
 
@@ -51,6 +53,15 @@ class _GuardScreenState extends ConsumerState<GuardScreen> {
             // switch only ever moves forward; turning it off needs a restart.
             onChanged:
                 state.watching ? null : (_) => controller.startWatching(),
+          ),
+        ),
+        Card(
+          child: SwitchListTile(
+            value: state.callGuard,
+            title: Text(strings.guardCallTitle),
+            subtitle: Text(strings.guardCallSubtitle),
+            onChanged:
+                state.callGuard ? null : (_) => controller.enableCallGuard(),
           ),
         ),
         const SizedBox(height: 12),
