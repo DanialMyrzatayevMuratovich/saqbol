@@ -22,12 +22,23 @@ There is only one repository — everything is inside it. No submodules.
 
 ## 3. Run everything (recommended: docker compose)
 
+First create the env file with secrets — it is git-ignored and never committed:
+
 ```bash
-docker compose up -d --build
+cp .env.example .env
+# For any exposed server, edit .env and set strong unique JWT secrets + POSTGRES_PASSWORD
+# (openssl rand -hex 32). If ports 3000/8080/8000 are taken, override them in .env too.
+```
+
+Then start the stack. Use `docker compose` (v2 plugin); on older hosts the command is the
+standalone `docker-compose`:
+
+```bash
+docker compose up -d --build      # or: docker-compose up -d --build
 ```
 
 This builds and starts all five containers: postgres, redis, ml, backend, web.
-Postgres/Redis are internal (no host ports). Published ports:
+Postgres/Redis are internal (no host ports). Published ports (override via `.env` if taken):
 
 - Web dashboard: http://localhost:3000
 - Backend API:   http://localhost:8080  (health: http://localhost:8080/health)
@@ -67,6 +78,17 @@ docker compose up -d backend      # restart backend so it promotes that phone to
 
 Log in on the web dashboard with that phone → admin pages work.
 
+## ⚠️ Security — read before exposing this to the internet
+
+- **Set unique JWT secrets** in `.env` (`JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`). The
+  example values are placeholders — with known secrets anyone can forge admin tokens. The
+  compose file now REQUIRES these to be set (it refuses to start otherwise).
+- **HTTP is unencrypted.** Fine for a quick demo; for real data use TLS + a domain.
+- **Keep the API private** if you don't need it public: set `BACKEND_BIND=127.0.0.1` in `.env`
+  and reach it via an SSH tunnel — `ssh -L 8080:127.0.0.1:8080 user@server` — instead of
+  binding to `0.0.0.0`.
+- Rate limiting is on by default (`RATE_LIMIT_PER_MIN=60`).
+
 ## 4. Alternative deploy paths
 
 - **Local Kubernetes (minikube):** see `k8s/README.md` → `./k8s/deploy.sh`.
@@ -104,17 +126,25 @@ cd saqbol-web && npm test
 
 Do NOT build or open the Android app automatically. Only when the user explicitly commands it:
 
+`API_BASE_URL` is REQUIRED — the app's built-in default is `http://localhost:8080`, which on a
+phone points at the phone itself, not your backend. Always pass `--dart-define`:
+
 ```bash
 cd saqbol-mobile
 flutter pub get
 
-# for the Android emulator, the host machine is 10.0.2.2:
+# Android EMULATOR + backend on the SAME machine: 10.0.2.2 is the emulator's alias for the host
 flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080
 
-# or build an APK against a running server:
-flutter build apk --dart-define=API_BASE_URL=http://<SERVER_IP>:8080
+# Real phone on the same Wi-Fi: use the host's LAN IP (e.g. 192.168.x.x)
+# Remote server: use its public IP/domain
+flutter build apk --dart-define=API_BASE_URL=http://<SERVER_IP_OR_LAN_IP>:8080
 ```
 
-Cleartext HTTP is already enabled in the Android manifest, so a plain `http://` backend works.
+Android cleartext HTTP is already enabled (`usesCleartextTraffic="true"`). **iOS is NOT** — to
+run over plain `http://` on iOS you must add an ATS exception (`NSAppTransportSecurity` →
+`NSAllowsArbitraryLoads = true`) to `saqbol-mobile/ios/Runner/Info.plist` (a security
+trade-off; do it only for an HTTP demo).
+
 To open in Android Studio: open the `saqbol-mobile/` folder, let Gradle sync, pick a device,
 and set the same `--dart-define=API_BASE_URL` in the run configuration.

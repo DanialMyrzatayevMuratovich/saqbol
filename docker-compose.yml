@@ -3,7 +3,7 @@ services:
     image: pgvector/pgvector:pg16
     environment:
       POSTGRES_USER: saqbol
-      POSTGRES_PASSWORD: saqbol
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: saqbol
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -24,17 +24,17 @@ services:
       HTTP_PORT: 8000
       GRPC_PORT: 9090
     ports:
-      - "8000:8000"
+      - "${ML_BIND:-127.0.0.1}:${ML_PORT:-8000}:8000"
 
   backend:
     build: ./saqbol-backend
     environment:
       HTTP_PORT: 8080
       GIN_MODE: release
-      DATABASE_URL: postgres://saqbol:saqbol@postgres:5432/saqbol?sslmode=disable
+      DATABASE_URL: postgres://saqbol:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/saqbol?sslmode=disable
       REDIS_URL: redis://redis:6379/0
-      JWT_ACCESS_SECRET: change_me_access
-      JWT_REFRESH_SECRET: change_me_refresh
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?set JWT_ACCESS_SECRET in .env}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?set JWT_REFRESH_SECRET in .env}
       ACCESS_TOKEN_TTL: 15m
       REFRESH_TOKEN_TTL: 168h
       ML_MOCK: "false"
@@ -42,9 +42,9 @@ services:
       SCAM_THRESHOLD: "0.8"
       SUSPICIOUS_THRESHOLD: "0.45"
       RATE_LIMIT_PER_MIN: "60"
-      ADMIN_PHONES: ""
+      ADMIN_PHONES: ${ADMIN_PHONES:-}
     ports:
-      - "8080:8080"
+      - "${BACKEND_BIND:-0.0.0.0}:${BACKEND_PORT:-8080}:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -57,9 +57,9 @@ services:
     build:
       context: ./saqbol-web
       args:
-        API_BASE_URL: http://localhost:8080
+        API_BASE_URL: ${WEB_API_BASE_URL:-http://localhost:8080}
     ports:
-      - "3000:3000"
+      - "${WEB_BIND:-0.0.0.0}:${WEB_PORT:-3000}:3000"
     depends_on:
       - backend
 
