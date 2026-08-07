@@ -1,0 +1,18 @@
+services:
+  ml:
+    ports: !override
+      - "8002:8000"
+
+  backend:
+    environment:
+      ADMIN_PHONES: "+77075201006"
+    ports: !override
+      - "8082:8080"
+
+  web:
+    build:
+      context: ./saqbol-web
+      args:
+        API_BASE_URL: http://89.167.96.246:8082
+    ports: !override
+      - "3010:3000"
