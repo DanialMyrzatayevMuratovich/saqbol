@@ -122,6 +122,18 @@ cd saqbol-mobile && flutter test
 cd saqbol-web && npm test
 ```
 
+The backend API integration tests (`saqbol-backend/internal/integration`) are skipped unless
+`TEST_DATABASE_URL` and `TEST_REDIS_URL` are set. They wipe both stores, so use throwaway
+containers (the database name must contain `test`); CI starts the same services itself:
+
+```bash
+docker run -d --name saqbol-test-pg -e POSTGRES_USER=saqbol -e POSTGRES_PASSWORD=saqbol \
+  -e POSTGRES_DB=saqbol_test -p 127.0.0.1:55432:5432 postgres:16-alpine
+docker run -d --name saqbol-test-redis -p 127.0.0.1:56379:6379 redis:7-alpine
+cd saqbol-backend && TEST_DATABASE_URL='postgres://saqbol:saqbol@127.0.0.1:55432/saqbol_test?sslmode=disable' \
+  TEST_REDIS_URL='redis://127.0.0.1:56379/0' go test ./internal/integration/
+```
+
 ## 7. Android app build — DO THIS ONLY WHEN THE USER EXPLICITLY ASKS
 
 Do NOT build or open the Android app automatically. Only when the user explicitly commands it:

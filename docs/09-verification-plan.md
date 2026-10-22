@@ -16,7 +16,7 @@ The project aim ([proposal](01-project-proposal.md#13-aim)) is reached when we c
 | Level | What | Tools | Exists today | To add |
 |---|---|---|---|---|
 | Unit | Token issuing / validation, mock classifier (Go); rule engine and pipeline thresholds (Python); highlighted triggers, strings in both languages, locale switch (Flutter); verdict labels (web) | `go test`, `pytest`, `flutter test`, `vitest` | ~30 tests: Go 7, Python 12, Flutter 9, web 2 | Store layer, reputation updates, batch check |
-| API integration | Every `/api/v1` endpoint: status codes, validation, auth (401), admin role (403), ownership (404 on another user's message) | Go `httptest` + mock classifier + test Postgres | — | SAQ-34 |
+| API integration | Every `/api/v1` endpoint: status codes, validation, auth (401), admin role (403), ownership (404 on another user's message) | Go `httptest` + mock classifier + PostgreSQL and Redis (services in CI) | 13 tests in `saqbol-backend/internal/integration`, run in CI (SAQ-34) | — |
 | End-to-end | Fresh clone → `docker compose up` → register → SMS check → verdict `scam` with `model_version` | Smoke script from `CLAUDE.md` | Manual | Run in CI on pull requests |
 | ML evaluation | Protocol in 9.4 | `training/evaluate.py`, Colab notebook | Partial (9.3) | SAQ-22 |
 | Real-time call | Protocol in 9.5 | Scripted calls, device logs | — | SAQ-23, SAQ-24 |
