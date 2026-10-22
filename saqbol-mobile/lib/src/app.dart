@@ -37,12 +37,17 @@ class _Gate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Nothing from one account may show up after logging in to the next one.
     ref.listen<AuthState>(authControllerProvider, (previous, next) {
-      if (previous?.status == AuthStatus.authenticated && next.status != AuthStatus.authenticated) {
+      final wasIn = previous?.status == AuthStatus.authenticated;
+      final isIn = next.status == AuthStatus.authenticated;
+      // Stop listening to a call the moment the session ends.
+      if (wasIn && !isIn) ref.invalidate(voiceControllerProvider);
+      // Every login starts clean: nothing from the previous account. Doing it
+      // on logout instead would refetch the history without a token while
+      // Home is still on screen, and keep that error.
+      if (!wasIn && isIn) {
         ref.invalidate(historyProvider);
         ref.invalidate(smsControllerProvider);
-        ref.invalidate(voiceControllerProvider);
         ref.invalidate(shellTabProvider);
       }
     });
