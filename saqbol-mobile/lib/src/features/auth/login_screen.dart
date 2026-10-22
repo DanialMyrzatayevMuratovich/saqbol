@@ -51,6 +51,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  /// Unticking deletes the saved phone and password at once. Waiting for the
+  /// next successful login would bring them back if the app is closed or the
+  /// login fails. Ticking saves nothing until a login succeeds.
+  void _setRemember(bool value) {
+    setState(() => _remember = value);
+    if (!value) ref.read(credentialsStorageProvider).clear();
+  }
+
   @override
   void dispose() {
     _phoneController.dispose();
@@ -140,7 +148,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: Gap.xs),
                 CheckboxListTile(
                   value: _remember,
-                  onChanged: (value) => setState(() => _remember = value ?? false),
+                  onChanged: (value) => _setRemember(value ?? false),
                   title: Text(strings.rememberMe),
                   controlAffinity: ListTileControlAffinity.leading,
                   contentPadding: EdgeInsets.zero,
