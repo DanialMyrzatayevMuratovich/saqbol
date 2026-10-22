@@ -51,7 +51,7 @@ sources count differently, so the figures are not added up or compared directly.
 | Public Kazakh spam dataset (GitHub `Yerassyl04/Spam-kazakh`) | 184 real Kazakh messages. It is small, and it is spam-oriented rather than fraud-oriented |
 | Published Kazakh spam corpus (Kumisbek & Shormakova, 2026; Zenodo) | 5,466 messages, but translated from the English SMS Spam Collection (advertising spam), so it does not show local fraud schemes |
 | Our training corpus (`saqbol-ml/data/train.csv`, 2026-10-10) | 4,457 rows, but only **228 real** messages, of which 47 are scams. The rest are templates (2,020) and English translations (2,209) |
-| Baseline model on real vs synthetic data | Recall (scam) is 0.97 on the full corpus but **0.47–0.51** on real messages only (see [verification plan](09-verification-plan.md#93-current-baseline)) |
+| Baseline model on real vs synthetic data | Recall (scam) is 0.96 on the full corpus but **0.47–0.51** on real messages only (see [verification plan](09-verification-plan.md#93-current-baseline)) |
 
 Conclusion: the lack of real Kazakh/Russian fraud data is not an assumption. We measured it, and
 it directly limits detection quality. Collecting real messages (task SAQ-19) is therefore part

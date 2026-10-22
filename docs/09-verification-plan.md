@@ -39,13 +39,17 @@ seed messages). Of the real messages, 47 are scams.
 
 | Protocol | n | Precision | Recall (scam) | F1 | FPR | ROC-AUC |
 |---|---|---|---|---|---|---|
-| A. 5-fold cross-validation grouped by template, all rows (the number in `models/baseline.json`) | 4,457 | 0.980 | 0.973 | 0.976 | 0.016 | 0.997 |
-| B. Same predictions as A, scored on real rows only | 228 | 1.000 | 0.468 (95% CI 0.32–0.62) | 0.638 | 0.000 | 0.950 |
-| C1. Train on synthetic rows only, test on all real rows, threshold 0.5 | 228 | 0.700 | 0.447 (0.30–0.60) | 0.545 | 0.050 | 0.838 |
-| C2. As C1, deployed threshold 0.8, model only | 228 | 1.000 | 0.021 | 0.042 | 0.000 | 0.838 |
-| C3. As C1, deployed pipeline: max(model, rules), threshold 0.8 | 228 | 1.000 | **0.511 (0.36–0.66)** | **0.676** | 0.000 | 0.882 |
+| A. 5-fold cross-validation grouped by template family (an original, its translation and every template they share), all rows (the number in `models/baseline.json`) | 4,457 | 0.935 | 0.958 (0.95–0.97) | 0.946 | 0.053 | 0.976 |
+| B. Same predictions as A, scored on real rows only | 228 | 1.000 | 0.468 (0.32–0.62) | 0.638 | 0.000 | 0.942 |
+| C1. Train on synthetic rows outside the test rows' families, test on all real rows, threshold 0.5 | 228 | 0.677 | 0.447 (0.30–0.60) | 0.538 | 0.055 | 0.821 |
+| C2. As C1, deployed threshold 0.8, model only | 228 | 1.000 | 0.021 (0.00–0.06) | 0.042 | 0.000 | 0.821 |
+| C3. As C1, deployed pipeline: max(model, rules), threshold 0.8 | 228 | 1.000 | **0.511 (0.36–0.66)** | **0.676** | 0.000 | 0.876 |
 
-The confidence intervals are 95% bootstrap intervals over the 47 real scams.
+The intervals are 95% bootstrap intervals of the scam recall (2,000 resamples of the scams, seed 42).
+`python training/evaluate_real.py` reproduces the whole table. C1–C3 leave out of training every row in
+the same template family as a test row; that removes the 228 English translations of the test messages.
+The table was re-measured after the fold grouping was fixed in the PR #14 review: grouping only by the
+original's template had let 99 English template families (839 rows) span folds, which put A at 0.973 recall.
 
 **Reading the table**
 
