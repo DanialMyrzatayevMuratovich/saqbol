@@ -7,7 +7,7 @@
     <!-- Android 13+ requires an explicit grant before local alerts can be shown. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
-        android:label="saqbol_mobile"
+        android:label="SaqBol"
         android:name="${applicationName}"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
