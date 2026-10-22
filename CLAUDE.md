@@ -5,6 +5,10 @@ SaqBol detects fraudulent SMS and calls in Kazakh/Russian. It is ONE monorepo wi
 apps: `saqbol-backend` (Go), `saqbol-ml` (Python), `saqbol-web` (Next.js), `saqbol-mobile`
 (Flutter). Clients only talk to the backend; the backend calls the ML service over gRPC.
 
+Agent tooling: skills and guard hooks in `.claude/`, checks with `python3 scripts/pipeline.py run checks`,
+and messages from the other team member's agent with `python3 scripts/mailbox.py inbox`. See
+[docs/agents.md](docs/agents.md).
+
 ## 1. Get the code
 
 ```bash
