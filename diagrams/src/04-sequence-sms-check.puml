@@ -1,0 +1,30 @@
+@startuml sequence-sms-check
+' SaqBol — main scenario: manual SMS check
+title SaqBol — SMS check (UC-2, UC-3, UC-9)
+autonumber
+
+actor "Mobile user" as U
+participant "Flutter app" as App
+participant "Go backend\n/api/v1/sms/check" as API
+participant "ML service\n(gRPC Classify)" as ML
+database "PostgreSQL" as DB
+
+U -> App : paste SMS text + sender number
+App -> API : POST /sms/check {text, source_number}\nAuthorization: Bearer JWT
+API -> API : validate JWT, rate limit (Redis)
+API -> ML : Classify(text, channel="sms")
+ML -> ML : TF-IDF + LogReg probability\n+ rule triggers / category
+ML --> API : verdict, probability, category,\ntriggers, advice, model_version
+API -> DB : insert message + detection
+opt verdict = scam and sender number given
+  API -> DB : raise number risk_score
+end
+API --> App : 200 {message_id, verdict, probability,\ncategory, triggers, advice, model_version}
+App --> U : verdict card + highlighted trigger phrases
+
+opt user disagrees or confirms
+  U -> App : "false alarm" / "this is scam"
+  App -> API : POST /reports {message_id, feedback}
+  API -> DB : insert report, raise or lower number risk_score
+end
+@enduml
