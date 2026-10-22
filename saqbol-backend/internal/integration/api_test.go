@@ -305,3 +305,52 @@ func TestRateLimit(t *testing.T) {
 	}
 	a.expect(a.call("POST", "/api/v1/auth/login", "", login), http.StatusTooManyRequests)
 }
+
+func TestDetectionsReferenceTheModelVersion(t *testing.T) {
+	a := newAPI(t, 0)
+	token, _ := a.register("+77000000211")
+	admin := a.admin("+77000000212")
+
+	// A version registered by an administrator is reused, not duplicated.
+	registered := a.expect(a.call("POST", "/api/v1/admin/model-versions", admin, map[string]string{
+		"name": "mock-rules-v1", "metrics": `{"note": "registered before the first check"}`,
+	}), http.StatusCreated)
+
+	first := a.expect(a.call("POST", "/api/v1/sms/check", token, map[string]string{"text": scamText}), http.StatusOK)
+	second := a.expect(a.call("POST", "/api/v1/sms/check", token, map[string]string{"text": safeText}), http.StatusOK)
+
+	for _, check := range []map[string]any{first, second} {
+		var versionID, versionName string
+		err := pool.QueryRow(context.Background(), `
+			SELECT d.model_version_id::text, v.name
+			FROM detections d JOIN model_versions v ON v.id = d.model_version_id
+			WHERE d.message_id = $1`, check["message_id"]).Scan(&versionID, &versionName)
+		if err != nil {
+			t.Fatalf("expected the detection to reference a model version: %v", err)
+		}
+		if versionID != registered["id"] || versionName != "mock-rules-v1" {
+			t.Fatalf("expected the registered version %v, got %s (%s)", registered["id"], versionID, versionName)
+		}
+	}
+}
+
+func TestUnknownModelVersionIsRegisteredOnFirstUse(t *testing.T) {
+	a := newAPI(t, 0)
+	token, _ := a.register("+77000000221")
+
+	a.expect(a.call("POST", "/api/v1/sms/check", token, map[string]string{"text": scamText}), http.StatusOK)
+	a.expect(a.call("POST", "/api/v1/sms/check", token, map[string]string{"text": scamText}), http.StatusOK)
+
+	var versions, linked int
+	if err := pool.QueryRow(context.Background(),
+		`SELECT count(*) FROM model_versions WHERE name = 'mock-rules-v1'`).Scan(&versions); err != nil {
+		t.Fatal(err)
+	}
+	if err := pool.QueryRow(context.Background(),
+		`SELECT count(*) FROM detections WHERE model_version_id IS NOT NULL`).Scan(&linked); err != nil {
+		t.Fatal(err)
+	}
+	if versions != 1 || linked != 2 {
+		t.Fatalf("expected one registered version used by both detections, got %d versions and %d linked detections", versions, linked)
+	}
+}

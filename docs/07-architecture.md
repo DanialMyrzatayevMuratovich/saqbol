@@ -111,8 +111,9 @@ CI (`.github/workflows/ci.yml`) builds and checks all four apps on every push.
 
 ### Known gaps found during this review
 
-- `detections.model_version_id` is never filled: the backend does not yet map `model_version`
-  from the ML response to a `model_versions` row.
+- ~~`detections.model_version_id` is never filled~~ — fixed in SAQ-26: every detection points at
+  the `model_versions` row named in the ML response; a version nobody registered yet is added
+  on first use with empty metrics.
 - `FR-13` accepts a transcript only; audio upload is not implemented.
 - The original draft (`SaqBol_TZ.md`) mentions NestJS, pgvector and object storage. The
   implementation uses Go, and has neither pgvector nor object storage yet. This document

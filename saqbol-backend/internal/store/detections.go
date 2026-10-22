@@ -19,10 +19,10 @@ func (r *DetectionRepo) Create(ctx context.Context, params CreateDetectionParams
 
 	var id string
 	err = r.pool.QueryRow(ctx, `
-		INSERT INTO detections (message_id, category_id, probability, triggers, latency_ms)
-		VALUES ($1, $2, $3, $4::jsonb, $5)
+		INSERT INTO detections (message_id, category_id, model_version_id, probability, triggers, latency_ms)
+		VALUES ($1, $2, $3::uuid, $4, $5::jsonb, $6)
 		RETURNING id::text`,
-		params.MessageID, params.CategoryID, params.Probability, string(triggers), params.LatencyMs,
+		params.MessageID, params.CategoryID, params.ModelVersionID, params.Probability, string(triggers), params.LatencyMs,
 	).Scan(&id)
 	return id, err
 }

@@ -31,6 +31,28 @@ func (r *ModelVersionRepo) List(ctx context.Context) ([]ModelVersion, error) {
 	return items, rows.Err()
 }
 
+// IDByName returns the newest model_versions row with this name. A version the
+// ML service reports but nobody registered yet is added with empty metrics, so
+// every detection can point at the model that produced it.
+func (r *ModelVersionRepo) IDByName(ctx context.Context, name string) (string, error) {
+	var id string
+	err := r.pool.QueryRow(ctx, `
+		WITH existing AS (
+			SELECT id FROM model_versions WHERE name = $1 ORDER BY trained_at DESC LIMIT 1
+		), created AS (
+			INSERT INTO model_versions (name, metrics)
+			SELECT $1, '{}'::jsonb
+			WHERE NOT EXISTS (SELECT 1 FROM existing)
+			RETURNING id
+		)
+		SELECT id::text FROM existing
+		UNION ALL
+		SELECT id::text FROM created`,
+		name,
+	).Scan(&id)
+	return id, err
+}
+
 func (r *ModelVersionRepo) Create(ctx context.Context, name, metrics string) (ModelVersion, error) {
 	if metrics == "" {
 		metrics = "{}"
