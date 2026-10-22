@@ -107,6 +107,14 @@ void main() {
     expect(en.onbBody1, isNot(contains('calls in Kazakh')));
   });
 
+  test('privacy text separates server storage from what the history shows', () {
+    expect(ru.privacyBody, contains('хранится на сервере, но в истории пока не показывается'));
+    expect(kk.privacyBody, contains('серверде сақталады, бірақ тарихта әзірге көрсетілмейді'));
+    expect(en.privacyBody, contains('stored on the server too, but are not shown in the history yet'));
+    // The consent page says the call text is stored as well.
+    expect(en.onbBody3, contains('stored there'));
+  });
+
   test('risk is labelled as a risk, not as a confidence in the verdict', () {
     expect(en.riskLabel(39), contains('39%'));
     expect(en.riskLabel(39).toLowerCase(), contains('risk'));
