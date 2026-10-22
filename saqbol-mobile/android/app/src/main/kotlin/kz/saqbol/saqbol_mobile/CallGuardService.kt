@@ -11,10 +11,10 @@ import android.telecom.CallScreeningService
 import android.util.Log
 import androidx.annotation.RequiresApi
 import org.json.JSONObject
-import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledThreadPoolExecutor
 
 /**
  * Screens every incoming call and warns when the caller's number has a bad
@@ -26,33 +26,26 @@ import java.util.concurrent.Executors
 @RequiresApi(Build.VERSION_CODES.N)
 class CallGuardService : CallScreeningService() {
 
-    private val executor = Executors.newSingleThreadExecutor()
+    private val gate = ScreeningGate(
+        lookups = Executors.newFixedThreadPool(ScreeningGate.LOOKUP_THREADS),
+        // A deadline whose lookup answered first leaves the queue at once.
+        deadlines = ScheduledThreadPoolExecutor(1).apply { removeOnCancelPolicy = true },
+        log = { message, error -> Log.w(TAG, message, error) },
+    )
 
     override fun onScreenCall(callDetails: Call.Details) {
-        val number = callDetails.handle?.schemeSpecificPart
-        if (number.isNullOrBlank()) {
-            allow(callDetails)
-            return
-        }
-
-        // Respond only after the lookup. Telecom unbinds the service as soon as
-        // it has an answer, and an app in the background is then frozen before
-        // the request goes out, so the warning never came. The call is still
-        // always allowed, and the timeouts below keep the lookup inside the
-        // few seconds Telecom waits for an answer.
-        executor.execute {
-            try {
-                val risk = fetchRisk(number)
-                if (risk != null && risk.score >= RISK_THRESHOLD) {
-                    warn(number, risk)
-                }
-            } catch (error: Exception) {
-                // Offline or backend down — screening is best-effort.
-                Log.w(TAG, "reputation lookup failed", error)
-            } finally {
-                allow(callDetails)
-            }
-        }
+        // Answer only after the lookup, or when the per-call deadline passes.
+        // Telecom unbinds the service as soon as it has an answer, and an app
+        // in the background can then be frozen before the warning is shown.
+        // The answer is always "allow", so the call itself is never blocked.
+        gate.screen(
+            number = callDetails.handle?.schemeSpecificPart,
+            lookup = ::fetchRisk,
+            onResult = { number, risk ->
+                if (risk.score >= RISK_THRESHOLD) warn(number, risk)
+            },
+            respond = { allow(callDetails) },
+        )
     }
 
     private fun allow(callDetails: Call.Details) {
@@ -61,33 +54,24 @@ class CallGuardService : CallScreeningService() {
 
     private data class Risk(val score: Double, val reports: Int)
 
-    private fun fetchRisk(number: String): Risk? {
+    private fun fetchRisk(number: String, cancellation: Cancellation): Risk? {
         val prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val baseUrl = prefs.getString(KEY_API_BASE, null) ?: return null
         val token = prefs.getString(KEY_TOKEN, null) ?: return null
 
         val encoded = URLEncoder.encode(number, "UTF-8")
-        val connection = URL("$baseUrl/numbers/$encoded/risk").openConnection()
-                as HttpURLConnection
-        connection.apply {
-            requestMethod = "GET"
-            setRequestProperty("Authorization", "Bearer $token")
-            // Together under Telecom's ~5 s screening limit.
-            connectTimeout = 1500
-            readTimeout = 2000
-        }
+        val body = ReputationHttp.get(
+            URL("$baseUrl/numbers/$encoded/risk"),
+            token,
+            cancellation,
+        ) ?: return null
 
-        try {
-            if (connection.responseCode != HttpURLConnection.HTTP_OK) return null
-            val payload = JSONObject(connection.inputStream.bufferedReader().readText())
-            if (!payload.optBoolean("known", false)) return null
-            return Risk(
-                score = payload.optDouble("risk_score", 0.0),
-                reports = payload.optInt("reports_count", 0),
-            )
-        } finally {
-            connection.disconnect()
-        }
+        val payload = JSONObject(body)
+        if (!payload.optBoolean("known", false)) return null
+        return Risk(
+            score = payload.optDouble("risk_score", 0.0),
+            reports = payload.optInt("reports_count", 0),
+        )
     }
 
     @SuppressLint("MissingPermission")
@@ -134,7 +118,7 @@ class CallGuardService : CallScreeningService() {
     }
 
     override fun onDestroy() {
-        executor.shutdown()
+        gate.shutdown()
         super.onDestroy()
     }
 
