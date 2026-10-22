@@ -10,6 +10,10 @@ I = inspection (code or document review).
 **Status:** ✅ implemented, 🟡 partial, ⬜ not started. "T" marks the intended verification;
 which automated tests exist today is listed in the [verification plan](09-verification-plan.md#92-test-levels).
 
+Implementation status is assessed against `main` at `91862dcca5d218887db7fd57fc1e88c4f3d2bf21` unless a row names a pending PR. An implemented code path is not evidence of a successful device test. Interface language, transcript classification language, and speech-recognition language are separate capabilities. A pending experiment or candidate recognizer is not an implemented fallback.
+
+For NFR-2, the current 228-row diagnostic subset is selected by `source` not starting with `synthetic`: 44 seed rows and 184 rows tagged as imported from `Yerassyl04/Spam-kazakh`. It contains 47 scam-labelled rows, 75 suspicious and 106 safe. This metadata rule does not establish human authorship or receipt by an actual SMS recipient. It is not the future provenance-verified received-SMS acceptance set. Dataset composition and pending evaluation changes are described in the verification plan; PR #25 adds the dataset card.
+
 Use-case IDs (UC-n) refer to the [use case diagram](../diagrams/export/use-case.svg).
 
 ## 6.1 Functional requirements
@@ -33,7 +37,7 @@ Use-case IDs (UC-n) refer to the [use case diagram](../diagrams/export/use-case.
 | ID | Requirement | Pri. | Acceptance criteria | Verif. | Status |
 |---|---|---|---|---|---|
 | FR-9 | The user can start a live analysis session during a call on speakerphone (UC-7) | M | Session opens an authenticated WebSocket to `/ws/call`; without a valid token the connection is refused | T, D | ✅ |
-| FR-10 | Speech is transcribed in Kazakh or Russian while the call goes on | M | Recognised text appears in the app while the speaker talks; word error rate is measured on the STT test set (see [verification plan](09-verification-plan.md)) | D, E | 🟡 Russian only: the app always uses the `ru_RU` recogniser, also in the Kazakh interface. Kazakh recognition is pending (fallback: Whisper + KSC2, see risks), WER not measured (SAQ-23). Classifying Kazakh and Russian *text* is FR-11 |
+| FR-10 | Speech is transcribed in Kazakh or Russian while the call goes on | M | For each required language, demonstrate microphone recognition and display of recognised text on a recorded test-device configuration; record device/OS, recognition service, available and requested locale, network mode, test utterances and language-specific WER under the verification plan. Selecting Russian recognition in the Kazakh interface does not satisfy Kazakh STT acceptance; classify manually supplied Kazakh/Russian transcripts under FR-11 separately | D, E | 🟡 Russian recognition code path configured on `main` (`ru_RU`); device behaviour and WER are not verified by this document. Kazakh STT is not implemented/verified. Pending PR #15 selects `en_US` for English UI and `ru_RU` for Russian/Kazakh UI; this does not add Kazakh STT. Whisper evaluation using KSC2 data is a candidate experiment (SAQ-23), not an implemented fallback |
 | FR-11 | The transcript is classified in real time with a sliding window | M | Every received fragment triggers classification of the last 600 characters; the server answers each fragment with probability, category and triggers | T | ✅ |
 | FR-12 | When the risk passes the threshold the app alerts the user (screen + vibration) | M | p ≥ 0.80 → red alert with advice and haptic feedback; alert latency per NFR-1 | D, E | ✅ |
 | FR-13 | A recorded or pasted call transcript can be analysed offline (UC-8) | S | `POST /api/v1/call/analyze` with a transcript ≤ 20,000 chars returns verdict and alert flag and stores a call session. Audio upload is **not** included | T | 🟡 transcript only |
@@ -55,8 +59,8 @@ Use-case IDs (UC-n) refer to the [use case diagram](../diagrams/export/use-case.
 | ID | Requirement | Pri. | Acceptance criteria (measurable) | Verif. | Status |
 |---|---|---|---|---|---|
 | NFR-1 | **Latency** | M | SMS check: p95 < 1 s end-to-end on the demo server for 100 sequential requests. Call: alert < 3 s from the moment the trigger phrase is recognised to the alert on screen | E | 🟡 measured locally (SMS p95 3 ms, server part of the call alert < 2 ms; PR #23); demo server and phones not yet |
-| NFR-2 | **Detection quality** | M | On the **real-only** test set: recall (scam) ≥ 0.90 and false-positive rate ≤ 0.10 for the selected model; precision, F1, ROC-AUC reported | E | 🟡 baseline below target on human-written, non-template messages; no real received SMS yet (SAQ-19) |
-| NFR-3 | **Privacy** | M | Message text and transcripts are processed only after explicit consent in the app; audio is never sent to the server; secrets are not committed; TLS on any public deployment | I, D | 🟡 consent and TLS pending |
+| NFR-2 | **Detection quality** | M | On a frozen, provenance-verified test set of received SMS, independent of training and threshold selection: recall (scam) ≥ 0.90 and false-positive rate ≤ 0.10 for the selected model; report precision, F1 and ROC-AUC with the test-set version and split protocol. Templates and translations must not be counted as received-SMS test examples, and duplicates/derived variants must not cross the train/test boundary | E | 🟡 acceptance not demonstrated: the current 228-row source-selected diagnostic subset has no verified receipt provenance and is not this acceptance set. Its reported baseline results are preliminary corpus diagnostics; received-SMS collection and the frozen evaluation remain pending (SAQ-19, SAQ-22) |
+| NFR-3 | **Privacy** | M | Message text and transcripts are processed only after explicit consent in the app. SaqBol's client-to-backend call-analysis requests contain transcript text, not audio. Before microphone use, disclose that the selected platform speech-recognition service may process audio remotely; any claim of exclusively on-device recognition requires verification on the specified device/service configuration. Inspect request payloads and the consent flow; keep secrets out of Git and use TLS on every public deployment | I, D | 🟡 text-only SaqBol call-analysis payload is implemented; platform STT audio processing has not been verified as exclusively on-device. Explicit app consent and public-deployment TLS remain pending on `main`; the consent UI in pending PR #20 does not prove platform STT privacy |
 | NFR-4 | **Security** | M | Passwords hashed (bcrypt); JWT secrets required at start-up; admin endpoints role-protected; rate limit 60 req/min per client by default; input length validated | T, I | ✅ |
 | NFR-5 | **Scalability** | S | Backend and ML service are stateless; both can run with ≥ 2 replicas behind the Kubernetes service without errors | D | 🟡 manifests exist, not load-tested |
 | NFR-6 | **Portability** | M | One Flutter codebase builds for Android and iOS; Android-only features (SMS access, call screening) degrade gracefully on iOS | D | ✅ |
@@ -69,7 +73,7 @@ Use-case IDs (UC-n) refer to the [use case diagram](../diagrams/export/use-case.
 
 | Objective ([proposal](01-project-proposal.md)) | Requirements |
 |---|---|
-| O1 Corpus | NFR-2 (real-only test set) |
+| O1 Corpus | NFR-2 (provenance-verified received-SMS test set) |
 | O2 Models | FR-1, FR-2, FR-3, NFR-2 |
 | O3 Backend + ML service | FR-1, FR-4, FR-8, FR-15, NFR-1, NFR-4, NFR-8 |
 | O4 Real-time calls | FR-9 … FR-14, NFR-1 |
