@@ -202,10 +202,12 @@ class AppStrings {
         'Алаяқтардан бір қадам алда болыңыз',
         'Stay one step ahead of scammers',
       );
+  // The call screen listens in Russian for the Russian and Kazakh interfaces
+  // and in English for the English one (VoiceController._startListening).
   String get onbBody1 => _t(
-        'SaqBol проверяет SMS и звонки на казахском и русском и объясняет, чем они опасны.',
-        'SaqBol қазақ және орыс тіліндегі SMS пен қоңырауларды тексеріп, неліктен қауіпті екенін түсіндіреді.',
-        'SaqBol checks SMS and calls in Kazakh and Russian and explains why they are dangerous.',
+        'SaqBol проверяет SMS на казахском и русском и объясняет, чем они опасны. Речь в звонке пока распознаётся только на русском: казахская речь ещё не поддерживается.',
+        'SaqBol қазақ және орыс тіліндегі SMS хабарламаларды тексеріп, неліктен қауіпті екенін түсіндіреді. Қоңыраудағы сөйлеу әзірге тек орыс тілінде танылады: қазақша сөйлеуді тану әлі жоқ.',
+        'SaqBol checks SMS in Kazakh and Russian and explains why they are dangerous. Call speech is recognised in Russian for now, or in English with the English interface. Kazakh speech recognition is not available yet.',
       );
   String get onbTitle2 => _t('Что умеет SaqBol', 'SaqBol не істей алады', 'What SaqBol does');
   String get onbFeature1Title => _t('Проверка SMS', 'SMS тексеру', 'SMS check');

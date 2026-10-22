@@ -98,6 +98,15 @@ void main() {
     }
   });
 
+  test('onboarding does not promise kazakh speech recognition on calls', () {
+    expect(ru.onbBody1, contains('только на русском'));
+    expect(ru.onbBody1, contains('казахская речь ещё не поддерживается'));
+    expect(kk.onbBody1, contains('тек орыс тілінде'));
+    expect(kk.onbBody1, contains('қазақша сөйлеуді тану әлі жоқ'));
+    expect(en.onbBody1, contains('Kazakh speech recognition is not available yet'));
+    expect(en.onbBody1, isNot(contains('calls in Kazakh')));
+  });
+
   test('risk is labelled as a risk, not as a confidence in the verdict', () {
     expect(en.riskLabel(39), contains('39%'));
     expect(en.riskLabel(39).toLowerCase(), contains('risk'));
