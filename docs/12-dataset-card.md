@@ -48,8 +48,11 @@ Scam categories in the template part are balanced by construction: 190 rows each
 
 ## 12.4 What "real" means in the scripts
 
-`train_baseline.py` and `evaluate.py` treat every row whose `source` does not start with
-`synthetic` as a real message. That gives 228 rows: 184 from Spam-kazakh and 44 seed messages.
+`training/evaluate_real.py` (the §9.3 table) and the Colab notebook (`real_only`) treat every row
+whose `source` does not start with `synthetic` as a real message. That gives 228 rows: 184 from
+Spam-kazakh and 44 seed messages. Each of them also has an English translation tagged
+`synthetic_translation_en`; when the 228 are the test set, `evaluate_real.py` keeps those
+translations out of training.
 
 **None of these 228 is an SMS that a real person is known to have received.** The Spam-kazakh rows
 read like examples written for the course project ("Бүгін ауа райы өте керемет.", "Сәлем, досым,
