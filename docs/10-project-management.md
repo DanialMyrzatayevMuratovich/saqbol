@@ -63,13 +63,14 @@ YouTrack is the source of truth for the current state.
 | SAQ-7 | Requirements and acceptance criteria | Danial | Critical | 2026-10-24 |
 | SAQ-8 | Prototype description and API examples | Danial | Major | 2026-10-24 |
 | SAQ-9 | Architecture diagrams with editable sources | Danial | Critical | 2026-10-24 |
-| SAQ-10 | Verification and evaluation plan, real-only baseline | Danial | Critical | 2026-10-24 |
+| SAQ-10 | Verification and evaluation plan, exploratory baseline with provenance limits | Danial | Critical | 2026-10-24 |
 | SAQ-11 | Project plan, risks, PR template | Danial | Major | 2026-10-24 |
 | SAQ-12 | Complete the README | Danial | Critical | 2026-10-24 |
 | SAQ-13 | Review the pre-defense-1 pull requests | Asylbek | Critical | 2026-10-24 |
 | SAQ-14 | Supervisor review of pre-defense-1 deliverables | Danial | Critical | 2026-10-24 |
 | SAQ-16 | Tag the pre-defense-1 submission | Danial | Critical | 2026-10-24 |
 | SAQ-35 | Capture prototype screenshots (mobile and web) | Danial | Major | 2026-10-24 |
+| [SAQ-86](https://saqbol.youtrack.cloud/issue/SAQ-86) | Correct speech-recognition and dataset-provenance claims across pre-defense materials | Asylbek | Critical | 2026-10-24 |
 
 ### M2 — Real data and evaluation harness
 
@@ -114,9 +115,9 @@ Probability (P) and impact (I): H = high, M = medium, L = low.
 
 | # | Risk | P | I | Mitigation | Owner |
 |---|---|---|---|---|---|
-| R1 | Not enough **real** labelled messages; metrics stay unreliable (only 47 real scams today) | H | H | Crowd-sourced collection (SAQ-19), interview participants, public warnings from banks and police; report confidence intervals | Asylbek |
+| R1 | No authenticated received-SMS evaluation cohort; 47 scam labels among 228 course/seed examples do not establish real-world quality | H | H | Consent-based collection (SAQ-19/50), provenance records and held-out evaluation; keep authored examples and public warnings distinct from received SMS | Asylbek |
 | R2 | Model fails the recall target on real data | M | H | Rules as a safety net; XLM-R; threshold tuning on validation data; honest reporting of the trade-off | Danial |
-| R3 | On-device speech recognition is poor in Kazakh | M | H | Measure WER early (SAQ-23); fallback to Whisper fine-tuned on KSC2 or to a cloud STT | Asylbek |
+| R3 | Kazakh speech recognition is not implemented/verified: the current voice path selects `ru_RU`; OS recognition may use a remote service | H | H | Verify supported locales and select Kazakh explicitly before WER testing (SAQ-23); present unsupported-language behavior clearly; evaluate an alternative recogniser and its data handling if needed | Asylbek |
 | R4 | Users won't put calls on speakerphone (assumption A3) | M | M | Check in interviews; offline transcript analysis (FR-13) as an alternative; focus the evaluation on the SMS module | Asylbek |
 | R5 | Google Play policy restricts SMS permissions to default SMS apps | H | M | The diploma demo uses a sideloaded APK; manual check and share-to-app work without SMS permission | Danial |
 | R6 | False alarms reduce trust | M | M | "Suspicious" band below the scam threshold; feedback button; FPR as a constraint in evaluation | Danial |
@@ -132,7 +133,7 @@ Probability (P) and impact (I): H = high, M = medium, L = low.
 | Interview participants (pensioners, relatives, young adults) | SAQ-3, SAQ-30 | To recruit |
 | Supervisor availability for reviews | SAQ-14 and each milestone | To agree with the supervisor |
 | Google Colab (free T4 GPU) | SAQ-21 | Available |
-| Android devices (Android 10+) for testing; one iPhone | SAQ-23, device tests | Two Android devices needed |
-| OS speech recognition language packs (Kazakh, Russian) | Live call module | To verify per device |
+| Android devices (Android 10+) for testing; one iPhone | SAQ-23, SAQ-45/46/65, device tests | Asylbek confirmed no suitable Android phone on 22 October; borrowed devices and a second caller/SMS sender needed; emulator checks do not replace physical tests |
+| OS speech-recognition locales and provider behavior | Live call module | Russian locale selected; Kazakh selection/support and local/remote processing must be verified per device |
 | Demo server (VPS) and a domain | SAQ-29, final demo | To confirm |
-| Public dataset `Yerassyl04/Spam-kazakh` | Current real test data | Used; license to be confirmed in the dataset card (SAQ-20) |
+| Public dataset `Yerassyl04/Spam-kazakh` | Exploratory course-example cohort, not authenticated received SMS | 184 deduplicated examples used; provenance/permission follow-up in SAQ-20/83; do not count these as collected real traffic |

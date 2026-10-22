@@ -148,3 +148,20 @@ trade-off; do it only for an HTTP demo).
 
 To open in Android Studio: open the `saqbol-mobile/` folder, let Gradle sync, pick a device,
 and set the same `--dart-define=API_BASE_URL` in the run configuration.
+
+## 8. Team workflow — read before changing anything
+
+Two students work in this repository, each from their own GitHub account. Follow
+[CONTRIBUTING.md](CONTRIBUTING.md). In short:
+
+- Every change belongs to a YouTrack task `SAQ-<id>` (https://saqbol.youtrack.cloud/issues/SAQ).
+  If the user has not named one, ask which task the work is for.
+- Branch from an up-to-date `main` as `SAQ-<id>-<slug>`; commit messages start with `SAQ-<id>: `.
+- Never commit or push to `main` (it is protected), never force-push, never merge a pull request.
+  Open a PR and request a review from the other team member; merging is done by a human after approval.
+- Before committing, check that `git config user.name` / `user.email` belong to the person you are
+  working for.
+- Never commit secrets (`.env`, tokens) or personal data (real SMS with names or numbers, interview
+  notes with names).
+- Project documentation lives in `docs/` (English); diagrams are PlantUML in `diagrams/src/`
+  with exports in `diagrams/export/`.

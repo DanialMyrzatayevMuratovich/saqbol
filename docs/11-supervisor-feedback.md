@@ -2,6 +2,11 @@
 
 **Supervisor:** Zhibek Nurzhanovna Sarsenova
 
+**Status on 22 October 2026:** no substantive supervisor feedback has been supplied to the team
+for this submission. The blank records below are a template, not evidence of a completed review.
+The supervisor's actual comments and the team's resulting decisions must be recorded before
+this component can be marked complete (SAQ-14). Automated or peer code review does not replace it.
+
 Each review is recorded below: what was reviewed, the comments, what we decided to do about each
 comment, and where the change can be found (commit, PR or YouTrack task). A comment is closed only
 when the change is merged or the decision not to change is explained.

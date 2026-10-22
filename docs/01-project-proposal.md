@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Project title** | SaqBol — Detection of Fraudulent SMS and Phone Calls in Kazakh and Russian Using Machine Learning |
+| **Project title** | Development of an Intelligent System for Detecting Fraudulent SMS Messages and Telephone Calls in the Kazakh and Russian Languages Using Machine Learning Methods |
 | **Short name** | SaqBol (*сақ бол* — Kazakh for "stay alert") |
 | **Team** | Danial Myrzatayev (SE-2412), Asylbek Abdibay (SE-2427) |
 | **Supervisor** | Zhibek Nurzhanovna Sarsenova |
@@ -26,8 +26,9 @@ Existing protection does not cover this situation well:
   (comparison: [Existing systems](04-existing-systems-comparison.md)).
 - Kazakh is a low-resource language. The public Kazakh spam corpus that exists was translated
   from English advertising spam, and the published Kazakhstan fraud datasets are either a
-  189-message pilot or synthetic. There is no corpus of authentic Kazakh and Russian
-  *fraud* messages ([Literature review](03-literature-review.md#35-gaps-the-project-addresses)).
+  189-message pilot or synthetic. These reviewed sources do not establish a sufficiently large,
+  documented authentic bilingual fraud-SMS corpus for our evaluation
+  ([Literature review](03-literature-review.md#35-gaps-the-project-addresses)).
 - A victim under pressure from a caller rarely stops to analyse the conversation. A warning
   is useful only if it arrives *during* the message or the call and explains *why* it is dangerous.
 
@@ -50,11 +51,11 @@ and explains each verdict to the user in time to prevent the loss.
 
 | # | Objective | Measurable target |
 |---|---|---|
-| O1 | Build a labelled Kazakh/Russian corpus of scam and legitimate messages, keeping real and synthetic data separate | ≥ 500 **real** labelled messages, ≥ 150 of them real scams, for the test set; dataset card that documents sources and labelling rules |
+| O1 | Build a labelled Kazakh/Russian corpus of authenticated received messages, keeping collected, course-example, seed, template and translated data distinct | Collect ≥ 500 messages in total, including ≥ 150 scams; freeze about 30% for a held-out test set before tuning, as specified in §9.4; document provenance and labelling rules |
 | O2 | Train and compare detection models: TF-IDF baseline vs fine-tuned XLM-RoBERTa | Metrics on a **real-only** held-out test set; target recall (scam) ≥ 0.90 at false-positive rate ≤ 0.10 |
 | O3 | Implement the backend API and ML inference service | SMS check p95 latency < 1 s end-to-end on the demo server |
-| O4 | Implement real-time analysis of a phone conversation (speech-to-text → sliding-window classification) | Alert < 3 s after the trigger phrase is recognised |
-| O5 | Implement a cross-platform mobile app (Android and iOS) with explanation of verdicts | All *Must* requirements pass their acceptance criteria ([Requirements](06-requirements.md)) |
+| O4 | Implement real-time analysis of a phone conversation (speech-to-text → sliding-window classification) | Verify recogniser availability and selected locale per language before measuring WER; report unsupported Kazakh recognition explicitly; target alert < 3 s after the trigger phrase is recognised |
+| O5 | Implement a cross-platform mobile app (Android and iOS) with explanation of verdicts | All *Must* requirements pass their acceptance criteria ([requirements draft in PR #8](https://github.com/DanialMyrzatayevMuratovich/saqbol/blob/46a3364f95f81ab53cd0bc5b658a921ec53547db/docs/06-requirements.md), pending review/merge) |
 | O6 | Implement a web dashboard for metrics, flagged messages and model versions | Admin scenarios UC-12 … UC-14 pass |
 | O7 | Evaluate the system with users and document the scientific results | Usability test with ≥ 5 participants; experiment report in the thesis |
 
@@ -80,7 +81,9 @@ and explains each verdict to the user in time to prevent the loss.
 - Sender-number reputation built from verdicts and user feedback.
 - Android: scanning the SMS inbox and incoming SMS, warning on incoming calls from high-risk
   numbers (with user permission).
-- Live call analysis in speakerphone mode: on-device speech-to-text → backend → classifier → alert.
+- Live call analysis in speakerphone mode: OS speech-recognition service → transcript → backend
+  → classifier → alert. The current mobile implementation requests `ru_RU`; Kazakh speech support
+  is pending. Recognition may use an OS-provider network service; offline processing is not enforced.
 - User feedback ("confirmed scam" / "false alarm"), check history, Kazakh and Russian interface.
 - Web dashboard for administrators.
 - Containerised deployment (Docker Compose, Kubernetes manifests), CI on GitHub Actions.
@@ -115,9 +118,14 @@ and explains each verdict to the user in time to prevent the loss.
 |---|---|
 | Backend (Go): auth, SMS check (single and batch), number reputation, feedback, history, admin, WebSocket call stream | Implemented |
 | ML service: TF-IDF + LogReg baseline with rule engine, gRPC + REST | Implemented; XLM-RoBERTa notebook prepared, not yet trained |
-| Mobile (Flutter): SMS check with highlighted triggers, guard (inbox scan, incoming SMS, call screening), live call analysis, history | Implemented on Android; KZ/RU localisation in progress |
+| Mobile (Flutter): SMS check, guard, live call analysis, message history | Prototype implementation available; Russian recognition locale requested, Kazakh speech unsupported/unverified; physical-device checks pending |
 | Web dashboard (Next.js): metrics, flagged messages, model versions | Implemented |
-| Dataset | 4,457 training rows, of which only 228 are real messages; collecting real data is the main open task |
+| Dataset in reviewed `main` | 2,248 rows: 2,020 template examples, 184 student-project examples and 44 team-authored seeds; no verified received-SMS evaluation cohort |
+| Dataset in the unmerged ML branch | 4,457 rows including 2,209 English translations; a different version, not evidence of authentic received SMS |
 | Analysis and design documentation | This pre-defense |
+| Primary user evidence | Interviews/client agreement pending; no findings inferred from the empty interview table |
+| Supervisor review | Feedback pending; the log does not establish that review has happened |
 
-The full list of open work is in [Project management](10-project-management.md).
+These are prototype and planning deliverables for 24 October, not a claim that all final-project
+objectives have been achieved. See the pinned [implementation/evidence record](implementation-evidence.md)
+and [Project management](10-project-management.md) for the remaining work.

@@ -1,8 +1,12 @@
 # 5. Technology Comparison
 
-Each key decision is compared against criteria taken from the requirements
-([06-requirements.md](06-requirements.md)). Scores: ●●● strong, ●● adequate, ● weak.
+Each key decision is compared against criteria from the proposed requirements
+([PR #8, under review](https://github.com/DanialMyrzatayevMuratovich/saqbol/pull/8)).
+Scores: ●●● strong, ●● adequate, ● weak.
 The chosen option is marked **✔**.
+
+Selection does not establish measured performance or completed language support. Current
+implementation evidence and pending work are recorded in [the status note](implementation-evidence.md).
 
 ## 5.1 Backend platform
 
@@ -45,6 +49,9 @@ A queue would only pay off for asynchronous jobs such as retraining, which we do
 Drivers: a transcript fragment every ~1–2 s and an alert pushed back within 3 s (NFR-1);
 must work from Flutter on Android and iOS.
 
+These are target timings. The current mobile controller forwards only final recognition
+results; their timing depends on the OS speech service and has not been validated on a device.
+
 | Criterion | **WebSocket ✔** | HTTP polling / repeated POST | gRPC streaming from the mobile app |
 |---|---|---|---|
 | Server → client push (alert) | ●●● | ● only on the next poll | ●●● |
@@ -58,7 +65,7 @@ with probability, category, triggers and an alert flag.
 ## 5.4 Scam-detection model
 
 Drivers: Kazakh, Russian and code-switched text (FR-1); recall ≥ 0.90 (NFR-2); an explanation
-of the verdict (FR-3); CPU inference < 1 s (NFR-1); very little real labelled data.
+of the verdict (FR-3); CPU inference < 1 s (NFR-1); authentic labelled SMS collection is pending.
 
 | Criterion | TF-IDF + Logistic Regression **✔ baseline** | Fine-tuned XLM-RoBERTa-base **✔ main candidate** | Prompted LLM (hosted API) |
 |---|---|---|---|
@@ -71,27 +78,40 @@ of the verdict (FR-3); CPU inference < 1 s (NFR-1); very little real labelled da
 
 **Decision:** keep both models. TF-IDF + LogReg is the production baseline and the reference
 point for the experiments (LinearSVM and Naive Bayes are compared in `training/evaluate.py`).
-XLM-RoBERTa is the main research candidate and is fine-tuned in Google Colab
-(`training/colab_train_xlmr.ipynb`). A hosted LLM is rejected for the production path because of
-privacy (NFR-3), latency and cost. A rule engine (`app/classifier/rules.py`) adds the scam
+XLM-RoBERTa is the main research candidate; fine-tuning in Google Colab is planned, not a
+validated deployed capability of the reviewed `main` snapshot. A hosted LLM is rejected for
+the production path because of privacy (NFR-3), latency and cost. A rule engine
+(`app/classifier/rules.py`) adds the scam
 category, explicit triggers and advice on top of either model.
 
 ## 5.5 Speech-to-text for live call analysis
 
-Drivers: Kazakh and Russian speech (FR-10), alert < 3 s (NFR-1), privacy (NFR-3), zero budget.
+Drivers: Kazakh and Russian speech as a target (FR-10), alert < 3 s as a target (NFR-1),
+privacy (NFR-3), zero budget. This comparison distinguishes the selected integration from
+unvalidated alternatives; it is not a language-quality or latency benchmark.
 
-| Criterion | **On-device OS recogniser (`speech_to_text` plugin) ✔** | Self-hosted Whisper (`faster-whisper`) | Cloud STT (Google Cloud Speech-to-Text / Yandex SpeechKit) |
+| Criterion | **OS speech service via `speech_to_text` ✔ current integration** | Self-hosted Whisper (`faster-whisper`), candidate | Cloud STT, candidate |
 |---|---|---|---|
-| Kazakh / Russian | ●● depends on the OS language packs on the phone; **must be verified per device** | ●● both languages supported; Kazakh accuracy lower than Russian | ●●● both offer Kazakh and Russian models |
-| Latency | ●●● streaming partial results on device | ● chunked, needs a GPU for real time | ●● streaming, network round trip |
-| Privacy | ●●● audio stays on the phone (on Android it may be processed by the Google speech service) | ●●● audio stays on our server | ● audio sent to a third party |
-| Cost | ●●● free | ●● GPU server | ● paid per minute |
-| Implementation effort | ●●● Flutter plugin | ● audio streaming + GPU deployment | ●● SDK + billing account |
+| Kazakh / Russian | Current code requests `ru_RU`; Kazakh recognition is not configured. Language availability and accuracy require device tests. | Select a multilingual model and measure Kazakh/Russian WER before choosing it. | Verify Kazakh/Russian support for the exact provider, model and region before choosing it. |
+| Latency | Only final recognition results reach the backend; device timing is unmeasured. | Audio upload, inference hardware and chunking need a measured prototype. | Audio streaming and network latency need a measured prototype. |
+| Audio processing and privacy | Delegated to the OS recogniser, which may use local or provider processing; locality is not enforced. SaqBol receives transcript text only. | Would require sending audio to infrastructure operated by the team; retention and access controls would need design. | Would require sending audio to the provider and checking its processing and retention terms. |
+| Cost | Reuses the device's speech service; no separate STT billing integration in SaqBol. | Additional inference hosting and resource costs to estimate. | Provider pricing and expected audio volume to estimate. |
+| Implementation effort | Flutter plugin is integrated; language, device and privacy validation remain. | Add audio capture/transport, inference deployment and evaluation. | Add provider integration, consent/disclosure and billing configuration. |
 
-**Decision:** on-device recognition for the MVP. Only text leaves the phone. STT quality on
-Kazakh is a known risk (R4 in [Project management](10-project-management.md)): we will measure
-word error rate on our own test recordings, and Whisper or a cloud STT is the fallback if
-on-device quality is insufficient.
+**Decision:** keep the OS speech-service integration for the prototype. In `main` at
+`91862dc`, [`voice_controller.dart`](../saqbol-mobile/lib/src/features/voice/voice_controller.dart)
+hardcodes `ru_RU` and forwards final recognised text through
+[`call_socket.dart`](../saqbol-mobile/lib/src/features/voice/call_socket.dart).
+The app does not upload audio to the SaqBol backend, but this does **not** establish that audio
+stays on the phone: the OS recogniser's processing location is not controlled by this code.
+
+Kazakh STT remains planned and unvalidated. The separately reviewed PR #20 at `f361a8f`
+also maps the Kazakh UI locale to `ru_RU`; a Kazakh interface or a manually submitted Kazakh
+transcript is not evidence of Kazakh speech recognition. Before claiming FR-10 or local-only
+processing, record the available recogniser locales and processing settings on the chosen
+device, measure Kazakh/Russian word error rate and alert latency, and document the result.
+This is risk R3 in [Project management](10-project-management.md). Whisper and cloud STT are
+fallback candidates, not implemented fallbacks.
 
 ## 5.6 Mobile framework
 
@@ -107,8 +127,9 @@ on Android.
 
 **Decision:** Flutter. Android-specific features are written in Kotlin inside the Flutter
 project: `CallGuardService.kt` is an Android `CallScreeningService` that the OS starts on an
-incoming call. The Dart side passes it the access token and locale through a platform channel,
-and the service queries the backend directly.
+incoming call. In this `main` snapshot, the Dart side passes the access token and API base URL
+(`apiBaseUrl`) through a platform channel, and the service queries the backend directly.
+Locale synchronisation is a pending PR #15 change.
 
 ## 5.7 Primary data storage
 

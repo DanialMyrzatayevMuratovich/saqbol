@@ -8,14 +8,14 @@ skinparam shadowing false
 skinparam nodesep 40
 skinparam ranksep 60
 
-title SaqBol — Components (draft)
+title SaqBol — Components (main 91862dc; device validation pending)
 
 package "saqbol-mobile (Flutter, Android / iOS)" {
-  [SMS check screen\n+ highlighted triggers] as MSms
+  [SMS check screen\n+ highlighted triggers\n+ verdict-card feedback] as MSms
   [Guard: inbox scan,\nincoming SMS] as MGuard
-  [History + feedback] as MHist
+  [Checked-SMS history\n(read-only list)] as MHist
   [Auth, locale KZ / RU] as MAuth
-  [Voice screen\n(speech_to_text, on-device)] as MVoice
+  [Voice screen\n(speech_to_text; ru_RU)\nKazakh STT pending] as MVoice
   [CallGuardService\n(Android call screening)] as MCallSvc
   [API client\n(Dio + JWT interceptor)] as MApi
   [Call socket\n(WebSocket client)] as MSock
@@ -50,13 +50,16 @@ package "saqbol-ml (Python)" {
 
 database "PostgreSQL" as PG
 database "Redis\n(rate-limit counters)" as Redis
+cloud "OS speech service\nlocal or provider processing\nnot enforced by app" as STT
 
 MSms --> MApi
 MGuard --> MApi
 MHist --> MApi
 MAuth --> MApi
-MGuard --> MCallSvc : MethodChannel\n(sync token, locale)
-MVoice --> MSock
+MGuard --> MCallSvc : MethodChannel\n(sync token, apiBaseUrl)
+MVoice --> STT : microphone recognition request
+STT --> MVoice : final recognised text
+MVoice --> MSock : transcript text only
 MApi --> BRouter : HTTPS REST /api/v1
 MCallSvc --> BRouter : HTTPS GET\n/numbers/{n}/risk
 MSock --> BRouter : WSS /ws/call\n(transcript frames)
@@ -79,10 +82,10 @@ BMl --> MGrpc : gRPC
 
 BAuth --> BStore
 BSms --> BStore
-BCalls --> BStore
+BCalls --> BStore : call_sessions
 BNum --> BStore
 BRep --> BStore
-BHist --> BStore
+BHist --> BStore : messages + detections only
 BAdmin --> BStore
 BStore --> PG : SQL
 
@@ -91,4 +94,8 @@ MRest --> MPipe
 MPipe --> MBase
 MPipe --> MRules
 MPipe ..> MXlmr : future
+legend bottom
+  HTTPS / WSS are deployment targets; demo TLS is pending.
+  Stored call_sessions are not returned by the current history endpoint.
+endlegend
 @enduml
