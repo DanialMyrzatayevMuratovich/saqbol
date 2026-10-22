@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/strings.dart';
-import '../../shared/locale_switcher.dart';
-import '../auth/auth_controller.dart';
-import '../guard/guard_screen.dart';
+import '../../shared/brand.dart';
+import '../../shared/theme_toggle.dart';
+import '../dashboard/dashboard_screen.dart';
+import '../guard/guard_controller.dart';
+import '../history/history_providers.dart';
 import '../history/history_screen.dart';
+import '../settings/settings_screen.dart';
 import '../sms/sms_check_screen.dart';
 import '../voice/voice_screen.dart';
+import 'shell_tab.dart';
 
+/// The main screen: five tabs that keep their state while switching.
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -17,42 +23,67 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _index = 0;
+  @override
+  void initState() {
+    super.initState();
+    // Restart the SMS listener the user had turned on and re-read the call
+    // screening role, which can be revoked in system settings.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(guardControllerProvider.notifier).restore();
+    });
+  }
+
+  void _select(ShellTab tab) {
+    HapticFeedback.selectionClick();
+    if (tab == ShellTab.home || tab == ShellTab.history) {
+      ref.invalidate(historyProvider);
+    }
+    ref.read(shellTabProvider.notifier).go(tab);
+  }
 
   @override
   Widget build(BuildContext context) {
     final strings = ref.watch(stringsProvider);
-    final titles = [strings.smsTitle, strings.guardTitle, strings.callTitle, strings.tabHistory];
+    final tab = ref.watch(shellTabProvider);
+
+    final titles = {
+      ShellTab.home: 'SaqBol',
+      ShellTab.check: strings.smsTitle,
+      ShellTab.call: strings.callTitle,
+      ShellTab.history: strings.tabHistory,
+      ShellTab.settings: strings.tabSettings,
+    };
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(titles[_index]),
-        actions: [
-          const LocaleSwitcher(),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: strings.logout,
-            onPressed: () => ref.read(authControllerProvider.notifier).logout(),
-          ),
-        ],
+        titleSpacing: 20,
+        title: Row(
+          children: [
+            if (tab == ShellTab.home) ...[const SaqLogo(size: 30), const SizedBox(width: 10)],
+            Text(titles[tab]!),
+          ],
+        ),
+        actions: const [ThemeToggleButton(), SizedBox(width: 8)],
       ),
       body: IndexedStack(
-        index: _index,
+        index: tab.index,
         children: const [
+          DashboardScreen(),
           SmsCheckScreen(),
-          GuardScreen(),
           VoiceScreen(),
           HistoryScreen(),
+          SettingsScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (value) => setState(() => _index = value),
+        selectedIndex: tab.index,
+        onDestinationSelected: (index) => _select(ShellTab.values[index]),
         destinations: [
-          NavigationDestination(icon: const Icon(Icons.sms_outlined), label: strings.tabSms),
-          NavigationDestination(icon: const Icon(Icons.shield_outlined), label: strings.tabGuard),
-          NavigationDestination(icon: const Icon(Icons.mic_none), label: strings.tabCall),
-          NavigationDestination(icon: const Icon(Icons.history), label: strings.tabHistory),
+          NavigationDestination(icon: const Icon(Icons.home_outlined), selectedIcon: const Icon(Icons.home_rounded), label: strings.tabHome),
+          NavigationDestination(icon: const Icon(Icons.sms_outlined), selectedIcon: const Icon(Icons.sms_rounded), label: strings.tabSms),
+          NavigationDestination(icon: const Icon(Icons.mic_none_rounded), selectedIcon: const Icon(Icons.mic_rounded), label: strings.tabCall),
+          NavigationDestination(icon: const Icon(Icons.history_rounded), selectedIcon: const Icon(Icons.history_rounded), label: strings.tabHistory),
+          NavigationDestination(icon: const Icon(Icons.settings_outlined), selectedIcon: const Icon(Icons.settings_rounded), label: strings.tabSettings),
         ],
       ),
     );

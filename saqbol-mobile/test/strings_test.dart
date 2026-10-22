@@ -50,9 +50,32 @@ void main() {
       en.transcript,
       en.manualFragment,
       en.historyEmpty,
-      en.historyLoadFailed('timeout'),
+      en.historyLoadFailed,
       en.feedbackFailed,
       en.modelVersion('v1'),
+      en.onbBody1,
+      en.onbFeature1Body,
+      en.onbFeature2Body,
+      en.onbFeature3Body,
+      en.onbBody3,
+      en.onbConsent,
+      en.protectedBody,
+      en.partialBody,
+      en.offBody,
+      en.checkMessageCtaBody,
+      en.noThreats,
+      en.checkIntro,
+      en.riskLabel(39),
+      en.callIntro,
+      en.alertTitle,
+      en.alertReasons,
+      en.notScammer,
+      en.unknownSender,
+      en.nothingMatches,
+      en.profileSubtitle,
+      en.scanInboxSubtitle,
+      en.privacyBody,
+      en.androidOnly,
       for (final verdict in ['scam', 'suspicious', 'safe'])
         en.verdictLabel(verdict),
       for (final category in [
@@ -69,6 +92,13 @@ void main() {
     for (final sample in samples) {
       expect(cyrillic.hasMatch(sample), isFalse, reason: sample);
     }
+  });
+
+  test('risk is labelled as a risk, not as a confidence in the verdict', () {
+    expect(en.riskLabel(39), contains('39%'));
+    expect(en.riskLabel(39).toLowerCase(), contains('risk'));
+    expect(ru.riskLabel(39), contains('39%'));
+    expect(kk.riskLabel(39), contains('39%'));
   });
 
   test('unknown or missing language code falls back to russian', () {

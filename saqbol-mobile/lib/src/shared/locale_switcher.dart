@@ -24,6 +24,7 @@ class LocaleSwitcher extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final current = ref.watch(localeControllerProvider);
+    final accent = context.saq.accent;
 
     return PopupMenuButton<AppLocale>(
       initialValue: current,
@@ -38,12 +39,12 @@ class LocaleSwitcher extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.language, size: 18, color: AppColors.accent),
+            Icon(Icons.language, size: 18, color: accent),
             const SizedBox(width: 6),
             Text(
               _codes[current]!,
-              style: const TextStyle(
-                color: AppColors.accent,
+              style: TextStyle(
+                color: accent,
                 fontWeight: FontWeight.w600,
               ),
             ),

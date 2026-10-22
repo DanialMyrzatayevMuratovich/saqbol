@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
 import '../../core/strings.dart';
+import '../history/history_providers.dart';
 import 'sms_models.dart';
 
 class SmsController extends Notifier<AsyncValue<SmsCheckResult?>> {
@@ -16,6 +17,8 @@ class SmsController extends Notifier<AsyncValue<SmsCheckResult?>> {
           .read(smsRepositoryProvider)
           .check(text: text, sourceNumber: sourceNumber);
       state = AsyncData(result);
+      // The new check belongs on Home and in History right away.
+      ref.invalidate(historyProvider);
     } on DioException catch (error, stackTrace) {
       state = AsyncError(_messageFrom(error), stackTrace);
     }

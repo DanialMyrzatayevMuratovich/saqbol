@@ -4,36 +4,58 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/auth/auth_controller.dart';
 import 'features/auth/login_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/onboarding/onboarding_controller.dart';
+import 'features/onboarding/onboarding_screen.dart';
 import 'shared/app_theme.dart';
+import 'shared/brand.dart';
+import 'shared/theme_controller.dart';
 
-class SaqBolApp extends StatelessWidget {
+class SaqBolApp extends ConsumerWidget {
   const SaqBolApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       title: 'SaqBol',
       debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
-      home: const _AuthGate(),
+      theme: buildAppTheme(Brightness.light),
+      darkTheme: buildAppTheme(Brightness.dark),
+      themeMode: ref.watch(themeControllerProvider),
+      home: const _Gate(),
     );
   }
 }
 
-class _AuthGate extends ConsumerWidget {
-  const _AuthGate();
+/// Onboarding (with the consent to send text for checking) comes first, then
+/// login, then the app.
+class _Gate extends ConsumerWidget {
+  const _Gate();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final status = ref.watch(authControllerProvider).status;
+    final onboarded = ref.watch(onboardingControllerProvider);
+    if (!onboarded.hasValue) return const _Splash();
+    if (onboarded.value != true) return const OnboardingScreen();
 
-    switch (status) {
+    switch (ref.watch(authControllerProvider).status) {
       case AuthStatus.authenticated:
         return const HomeScreen();
       case AuthStatus.unauthenticated:
         return const LoginScreen();
       case AuthStatus.unknown:
-        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        return const _Splash();
     }
+  }
+}
+
+class _Splash extends StatelessWidget {
+  const _Splash();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: context.saq.background,
+      body: const Center(child: SaqLogo(size: 72)),
+    );
   }
 }

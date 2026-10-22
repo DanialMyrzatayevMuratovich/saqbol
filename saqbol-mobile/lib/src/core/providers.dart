@@ -11,6 +11,7 @@ import 'app_config.dart';
 import 'auth_interceptor.dart';
 import 'credentials_storage.dart';
 import 'locale_storage.dart';
+import 'preferences_storage.dart';
 import 'token_storage.dart';
 
 final appConfigProvider = Provider<AppConfig>((ref) {
@@ -27,6 +28,18 @@ final credentialsStorageProvider = Provider<CredentialsStorage>((ref) {
 
 final localeStorageProvider = Provider<LocaleStorage>((ref) {
   return LocaleStorage(const FlutterSecureStorage());
+});
+
+final themeStorageProvider = Provider<ThemeStorage>((ref) {
+  return ThemeStorage(const FlutterSecureStorage());
+});
+
+final guardPrefsProvider = Provider<GuardPrefs>((ref) {
+  return GuardPrefs(const FlutterSecureStorage());
+});
+
+final onboardingStorageProvider = Provider<OnboardingStorage>((ref) {
+  return OnboardingStorage(const FlutterSecureStorage());
 });
 
 final dioProvider = Provider<Dio>((ref) {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -63,6 +64,10 @@ class VoiceController extends Notifier<VoiceState> {
   final SpeechToText _speech = SpeechToText();
   CallSocket? _socket;
 
+  /// Set when the user says the caller is not a scammer: no more alerts until
+  /// the next session.
+  bool _muted = false;
+
   @override
   VoiceState build() {
     ref.onDispose(() => _socket?.close());
@@ -82,10 +87,11 @@ class VoiceController extends Notifier<VoiceState> {
 
     socket.connect(
       token: token,
-      onAlert: _handleAlert,
+      onAlert: handleAlert,
       onClosed: _handleClosed,
     );
 
+    _muted = false;
     state = const VoiceState(active: true);
     await _startListening();
   }
@@ -133,8 +139,10 @@ class VoiceController extends Notifier<VoiceState> {
     }
   }
 
-  void _handleAlert(CallAlert alert) {
-    final becameAlert = alert.alert && !state.alerted;
+  @visibleForTesting
+  void handleAlert(CallAlert alert) {
+    final shouldAlert = alert.alert && !_muted;
+    final becameAlert = shouldAlert && !state.alerted;
     if (becameAlert) {
       HapticFeedback.heavyImpact();
       SystemSound.play(SystemSoundType.alert);
@@ -145,8 +153,14 @@ class VoiceController extends Notifier<VoiceState> {
       category: alert.category,
       advice: alert.advice,
       triggers: alert.triggers,
-      alerted: state.alerted || alert.alert,
+      alerted: state.alerted || shouldAlert,
     );
+  }
+
+  /// The user decided the caller is not a scammer: hide the alert, keep listening.
+  void dismissAlert() {
+    _muted = true;
+    state = state.copyWith(alerted: false);
   }
 
   void _handleClosed() {
