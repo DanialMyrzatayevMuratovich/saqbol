@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../../core/providers.dart';
+import '../../core/strings.dart';
 import 'call_socket.dart';
 import 'voice_models.dart';
 
@@ -71,7 +72,7 @@ class VoiceController extends Notifier<VoiceState> {
   Future<void> start() async {
     final token = await ref.read(tokenStorageProvider).readAccess();
     if (token == null) {
-      state = state.copyWith(error: 'Нет активной сессии');
+      state = state.copyWith(error: ref.read(stringsProvider).noSession);
       return;
     }
 
@@ -109,8 +110,13 @@ class VoiceController extends Notifier<VoiceState> {
       return;
     }
 
+    // Kazakh recognition is missing on most devices, so only English gets its
+    // own recogniser; the Kazakh interface keeps listening in Russian.
+    final localeId =
+        ref.read(localeControllerProvider) == AppLocale.en ? 'en_US' : 'ru_RU';
+
     await _speech.listen(
-      listenOptions: SpeechListenOptions(partialResults: true, localeId: 'ru_RU'),
+      listenOptions: SpeechListenOptions(partialResults: true, localeId: localeId),
       onResult: (result) {
         if (result.finalResult && result.recognizedWords.isNotEmpty) {
           _socket?.sendFragment(result.recognizedWords);

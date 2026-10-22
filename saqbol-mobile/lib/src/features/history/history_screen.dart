@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/providers.dart';
+import '../../core/strings.dart';
 import '../../shared/verdict_style.dart';
 import 'history_models.dart';
 
@@ -18,6 +19,7 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final history = ref.watch(historyProvider);
+    final strings = ref.watch(stringsProvider);
 
     return RefreshIndicator(
       onRefresh: () => ref.refresh(historyProvider.future),
@@ -25,9 +27,9 @@ class HistoryScreen extends ConsumerWidget {
         data: (items) {
           if (items.isEmpty) {
             return ListView(
-              children: const [
-                SizedBox(height: 120),
-                Center(child: Text('История пуста')),
+              children: [
+                const SizedBox(height: 120),
+                Center(child: Text(strings.historyEmpty)),
               ],
             );
           }
@@ -35,20 +37,22 @@ class HistoryScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(12),
             itemCount: items.length,
             separatorBuilder: (_, _) => const SizedBox(height: 8),
-            itemBuilder: (context, index) => _HistoryTile(item: items[index]),
+            itemBuilder: (context, index) =>
+                _HistoryTile(item: items[index], strings: strings),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Ошибка загрузки: $error')),
+        error: (error, _) => Center(child: Text(strings.historyLoadFailed(error))),
       ),
     );
   }
 }
 
 class _HistoryTile extends StatelessWidget {
-  const _HistoryTile({required this.item});
+  const _HistoryTile({required this.item, required this.strings});
 
   final HistoryItem item;
+  final AppStrings strings;
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +77,8 @@ class _HistoryTile extends StatelessWidget {
         ),
         subtitle: Text(
           [
-            style.label,
-            if (item.category.isNotEmpty) categoryLabel(item.category),
+            strings.verdictLabel(item.verdict),
+            if (item.category.isNotEmpty) strings.categoryLabel(item.category),
             formatted,
           ].join(' · '),
           style: TextStyle(color: style.color),

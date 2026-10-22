@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/app_theme.dart';
+import '../../shared/locale_switcher.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/strings.dart';
@@ -49,12 +50,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          TextButton(
-            onPressed: () => ref.read(localeControllerProvider.notifier).toggle(),
-            child: Text(ref.watch(localeControllerProvider) == AppLocale.ru ? 'ҚАЗ' : 'РУС'),
-          ),
-        ],
+        actions: const [LocaleSwitcher()],
       ),
       body: SafeArea(
         child: Center(

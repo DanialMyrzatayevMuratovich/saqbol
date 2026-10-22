@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/strings.dart';
+import '../../shared/locale_switcher.dart';
 import '../auth/auth_controller.dart';
 import '../guard/guard_screen.dart';
 import '../history/history_screen.dart';
@@ -27,10 +28,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: Text(titles[_index]),
         actions: [
-          TextButton(
-            onPressed: () => ref.read(localeControllerProvider.notifier).toggle(),
-            child: Text(ref.watch(localeControllerProvider) == AppLocale.ru ? 'ҚАЗ' : 'РУС'),
-          ),
+          const LocaleSwitcher(),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: strings.logout,

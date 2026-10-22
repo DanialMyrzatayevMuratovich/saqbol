@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../core/strings.dart';
 import 'sms_models.dart';
 
 class SmsController extends Notifier<AsyncValue<SmsCheckResult?>> {
@@ -29,7 +30,7 @@ class SmsController extends Notifier<AsyncValue<SmsCheckResult?>> {
     if (data is Map && data['error'] is String) {
       return data['error'] as String;
     }
-    return 'Проверка не удалась. Попробуйте ещё раз.';
+    return ref.read(stringsProvider).checkFailed;
   }
 }
 

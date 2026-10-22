@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../core/strings.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
 
@@ -67,7 +68,7 @@ class AuthController extends Notifier<AuthState> {
     if (data is Map && data['error'] is String) {
       return data['error'] as String;
     }
-    return 'Не удалось выполнить запрос. Проверьте подключение.';
+    return ref.read(stringsProvider).requestFailed;
   }
 }
 
