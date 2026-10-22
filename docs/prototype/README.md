@@ -3,6 +3,12 @@
 Screenshots of the key scenarios in [08-prototype.md](../08-prototype.md) (task SAQ-35), taken on
 2026-10-22.
 
+**Revision captured:**
+- **Mobile app:** branch `SAQ-18-mobile-localisation-icon` at `8b50d54` (PR #15). This is before the
+  icon change and before the redesign in PR #20, which looks different and is not shown here.
+- **ML service:** the code of `SAQ-17-ml-english-and-xlmr` at `66575f3` (PR #14).
+- **Backend and web:** `main` at `91862dc`.
+
 **Setup:** full stack started with `docker compose up -d --build` on a MacBook. The mobile app is
 a release build (arm64) on the Android emulator (API 36) with `API_BASE_URL=http://10.0.2.2:8080`.
 The model is `baseline-tfidf-logreg-v1`. Only a demo account (`+77000000001`) and fictional
@@ -37,6 +43,12 @@ Usability problems noticed while capturing are listed in
 |---|---|---|
 | [web-01-dashboard.png](web-01-dashboard.png) | W1 Metrics | Users, checks, scam / suspicious counts, call alerts, categories chart, verdict split |
 | [web-02-messages.png](web-02-messages.png) | W2 Flagged messages | Latest checks of the demo account (rows of older test accounts were hidden before capturing) |
-| [web-03-models.png](web-03-models.png) | W3 Model versions | The baseline registered with its real-only metrics from [verification plan §9.3](../09-verification-plan.md#93-current-baseline) |
+| [web-03-models.png](web-03-models.png) | W3 Model versions | The baseline registered with its metrics from [verification plan §9.3](../09-verification-plan.md#93-current-baseline). ⚠️ See the note below on "real-only" |
+
+> **Note on web-03-models.png.** The metrics field in this screenshot says `real-only test, 228
+> messages`. That was our label when it was captured. Those 228 rows are **not received SMS**: they
+> are 184 short Kazakh sentences from a student project (`Yerassyl04/Spam-kazakh`) and 44 seed
+> messages written by the team (see the dataset card in PR #25). The screenshot shows the model page;
+> it is **not** evidence of real-world recall.
 
 The dashboard totals include earlier test data in the local database.
