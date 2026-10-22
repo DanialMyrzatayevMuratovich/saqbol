@@ -45,16 +45,16 @@ Type: J = journal, C = conference, A = extended / student abstract.
 | [13] | Shen et al., 2025b | A | Real-time phone scam, ZH | LLM verdict after each speaker turn; optional UNCERTAIN | Real + synthetic calls | Real-time recall 0.98–1.00, precision 0.70–0.77 on synthetic, vs 0.95–1.00 after the call | No user study | Timeliness vs precision trade-off; alert threshold |
 | [14] | Conneau et al., 2020 | C | Multilingual pre-training | XLM-R, 100 languages | CC-100; Kazakh 476M tokens | +14.6% XNLI accuracy over mBERT | "Curse of multilinguality" | Main model choice |
 | [15] | Yeshpanov, Khassanov & Varol, 2022 | C | NER, KZ | CRF, BiLSTM-CNN-CRF, mBERT, XLM-R | KazNERD: 112,702 sentences | F1: mBERT 96.24%, XLM-R 97.22% | News domain | XLM-R over mBERT for Kazakh |
-| [16] | Yeshpanov & Varol, 2024 | C | Sentiment, KZ | mBERT, XLM-R, RemBERT, mBART-50 | KazSAnDRA: 180,064 reviews | Polarity F1 0.81 (XLM-R, RemBERT) | — | Real Kazakh text is mixed-script and code-switched |
+| [16] | Yeshpanov & Varol, 2024 | C | Sentiment, KZ | mBERT, XLM-R, RemBERT, mBART-50 | KazSAnDRA: 180,064 reviews | Polarity F1 0.81 (XLM-R, RemBERT) | Not assessed | Real Kazakh text is mixed-script and code-switched |
 | [17] | Yeshpanov, 2026 | C | Sentiment, **KZ / RU / code-switched** | SVM, LR, MNB, mBERT, XLM-R, RemBERT | 100,502 reviews | Macro-F1: XLM-R 0.81, mBERT 0.74, SVM 0.73, LR 0.71, MNB 0.70; code-switched 0.76 vs Russian 0.81 (RemBERT) | Long reviews, not messages | Expected ranking of our models; code-switching is harder |
-| [18] | Yeshpanov et al., 2024 | C | QA, KZ | Machine-translated data for training only, real exam questions for test | ~61,000 MT triples | — | — | Precedent for "synthetic/translated for training, real for testing" |
-| [19] | Mussakhojayeva, Khassanov & Varol, 2022 | C | ASR, KZ | Corpus | KSC2: > 1,000 h, incl. KZ–RU code-switching | — | — | STT fine-tuning resource |
-| [20] | Radford et al., 2023 | C | ASR, multilingual | Whisper, weak supervision | 680,000 h | — | — | STT candidate |
+| [18] | Yeshpanov et al., 2024 | C | QA, KZ | Machine-translated data for training only, real exam questions for test | ~61,000 MT triples | Not recorded | Not assessed | Precedent for "synthetic/translated for training, real for testing" |
+| [19] | Mussakhojayeva, Khassanov & Varol, 2022 | C | ASR, KZ | Corpus | KSC2: > 1,000 h, incl. KZ–RU code-switching | Not recorded | Not assessed | STT fine-tuning resource |
+| [20] | Radford et al., 2023 | C | ASR, multilingual | Whisper, weak supervision | 680,000 h | Not recorded | Not assessed | STT candidate |
 | [21] | Li et al., 2024 | C | ASR, KZ | Whisper + LM fusion + pseudo-label fine-tuning | Fleurs, KSC | Off-the-shelf Whisper-large WER 43.58% (Fleurs), 56.18% (KSC); best 32.36% | Read speech, not calls | Off-the-shelf Kazakh STT is weak → measure WER, tolerate noise |
-| [22] | Doğruöz et al., 2021 | C | Code-switching survey | — | — | Language technologies handle code-switching poorly | Survey | Code-switching as a separate challenge |
-| [23] | Ribeiro, Singh & Guestrin, 2016 | C | Explainability | LIME | — | — | Local, approximate | Explanations for the transformer model |
-| [24] | Jain & Wallace, 2019 | C | Explainability | Attention vs gradient importance | — | Attention weights often disagree with feature importance | — | Do not use raw attention as the explanation |
-| [25] | Artetxe et al., 2023 | C | Cross-lingual classification | Translate-train vs translate-test | — | MT-based approaches "substantially better than previously assumed"; train/test mismatch matters | — | Translation augmentation; keep test set real |
+| [22] | Doğruöz et al., 2021 | C | Code-switching survey | Literature survey | Not applicable | Language technologies handle code-switching poorly | Survey | Code-switching as a separate challenge |
+| [23] | Ribeiro, Singh & Guestrin, 2016 | C | Explainability | LIME | Not recorded | Not recorded | Local, approximate | Explanations for the transformer model |
+| [24] | Jain & Wallace, 2019 | C | Explainability | Attention vs gradient importance | Not recorded | Attention weights often disagree with feature importance | Not assessed | Do not use raw attention as the explanation |
+| [25] | Artetxe et al., 2023 | C | Cross-lingual classification | Translate-train vs translate-test | Not recorded | MT-based approaches "substantially better than previously assumed"; train/test mismatch matters | Not assessed | Translation augmentation; keep test set real |
 
 ## 3.3 Critical review
 
