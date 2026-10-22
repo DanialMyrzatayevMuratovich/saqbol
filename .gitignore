@@ -34,3 +34,7 @@ build/
 .idea/
 .vscode/
 *.iml
+
+# Local compose overrides and backups can hold server addresses and personal data.
+docker-compose.override.yml
+*.bak
