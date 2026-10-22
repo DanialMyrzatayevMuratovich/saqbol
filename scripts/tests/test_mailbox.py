@@ -54,6 +54,9 @@ class FormatTest(unittest.TestCase):
         self.assertEqual(mbx.new_id("danial", "Review PR #19: logo!", "task", now, set()),
                          "20261022T193005Z-danial-review-pr-19-logo")
         self.assertEqual(mbx.new_id("danial", "Сәлем", "advice", now, set()), "20261022T193005Z-danial-advice")
+        long = mbx.new_id("danial", "Start here: Asylbek's SAQ tasks, and please reply", "task", now, set())
+        self.assertEqual(long, "20261022T193005Z-danial-start-here-asylbek-s-saq-tasks-and")
+        self.assertEqual(len(mbx.new_id("danial", "x" * 90, "task", now, set()).split("-danial-")[1]), 40)
         taken = {"20261022T193005Z-danial-x"}
         self.assertEqual(mbx.new_id("danial", "x", "task", now, taken), "20261022T193005Z-danial-x-2")
 

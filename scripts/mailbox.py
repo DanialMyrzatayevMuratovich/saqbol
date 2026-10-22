@@ -133,7 +133,11 @@ def iso(dt: datetime) -> str:
 
 
 def new_id(sender: str, subject: str, kind: str, now: datetime, taken: set[str]) -> str:
-    slug = re.sub(r"[^a-z0-9]+", "-", subject.lower()).strip("-")[:40].strip("-") or kind
+    slug = re.sub(r"[^a-z0-9]+", "-", subject.lower()).strip("-")
+    if len(slug) > 40:  # cut at a word boundary when there is one
+        cut = slug[:41]
+        slug = cut[:cut.rfind("-")] if "-" in cut[1:] else slug[:40]
+    slug = slug.strip("-") or kind
     base = f"{now.strftime('%Y%m%dT%H%M%SZ')}-{sender}-{slug}"
     candidate, n = base, 2
     while candidate in taken:
