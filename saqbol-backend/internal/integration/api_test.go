@@ -353,6 +353,7 @@ func TestUnknownModelVersionIsRegisteredOnFirstUse(t *testing.T) {
 	if versions != 1 || linked != 2 {
 		t.Fatalf("expected one registered version used by both detections, got %d versions and %d linked detections", versions, linked)
 	}
+}
 
 func TestRateLimitIsPerUserOnProtectedRoutes(t *testing.T) {
 	a := newAPI(t, 3)
