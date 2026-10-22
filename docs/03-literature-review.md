@@ -82,10 +82,15 @@ LLM. However, its data is translated English advertising spam, and the authors t
 native user-generated corpora. Serek et al. [7] use real Russian, Kazakh and English fraud
 messages with the same TF-IDF baselines and recall-first evaluation as SaqBol, but only 189 of
 them. Radolda et al. [8] generate 720 synthetic messages and get F1 = 1.00, which they attribute
-"entirely to the artificial lexical gap" between template classes. Our own baseline behaves the
-same way: recall falls from 0.97 on the template-heavy corpus to about 0.5 on real messages
-([verification plan](09-verification-plan.md#93-current-baseline)). Taken together, [6]–[8] mean
-that a high score on translated or synthetic data is not evidence of real-world performance.
+"entirely to the artificial lexical gap" between template classes. SaqBol's author-reported
+exploratory results at PR #25 revision `37305a2` show about 0.96 recall on the expanded,
+template-heavy corpus and about 0.5 in the non-template diagnostics
+([verification plan](09-verification-plan.md#93-current-baseline)). The latter use 184
+student course-project examples and 44 team-written seeds, not confirmed received SMS; the
+protocols and source versions differ and must be retained with the numbers. These results were
+not rerun for this documentation correction. Taken together, [6]–[8] motivate authentic held-out
+evaluation: high scores on translated, synthetic or authored examples do not establish real-world
+performance.
 
 ### Phone-scam (vishing) detection
 
@@ -126,8 +131,14 @@ Fine-tuning and language-model fusion lower it to 32.36% [21]. KSC2 [19] provide
 hours of Kazakh speech, including Kazakh–Russian code-switching, for fine-tuning. Cho and Seo [11]
 found that ASR quality strongly affects detection. SaqBol currently uses the phone's built-in
 recogniser (see [Technology comparison](05-technology-comparison.md#55-speech-to-text-for-live-call-analysis)).
-The literature says this choice must be measured (WER on our own recordings), and that the
-classifier must tolerate recognition errors.
+The literature does not establish whether that device recogniser supports Kazakh. The reviewed
+main implementation at `91862dc` requests `ru_RU`; Kazakh ASR is unverified and unavailable on a
+device without a supported Kazakh locale. Locale/provider availability must be checked before
+measuring WER, followed by recognition and end-to-end detection tests on each target device.
+If no suitable locale exists, show an explicit unsupported-language outcome or use a clearly
+labelled fallback. Classifying a prepared Kazakh transcript demonstrates text inference only;
+it does not establish Kazakh speech recognition or telephone-audio capture. See the separate
+test paths in [the call evaluation plan](09-verification-plan.md#95-real-time-call-evaluation).
 
 ### Explainability
 
@@ -141,8 +152,12 @@ attribution method (LIME or SHAP) rather than raw attention.
 
 Artetxe et al. [25] show that machine translation is a stronger tool for cross-lingual
 classification than often assumed. They also show that the mismatch between translated and
-original text matters. SaqBol uses translation and templates to enlarge the training set and keeps
-the test set real. This also follows [18] and the warnings in [6] and [8].
+original text matters. SaqBol plans to use translation and templates for training while reserving
+an authentic received-message test set. That collection and split are still pending; the current
+228-example diagnostic consists of course/seed examples, not authenticated received traffic;
+the imported course examples' creation method is not independently established. Source examples,
+their translations and related template families must be kept together when forming splits.
+This evaluation design is informed by [18] and the warnings in [6] and [8].
 
 ## 3.4 What SaqBol takes from the literature
 
@@ -151,23 +166,27 @@ the test set real. This also follows [18] and the warnings in [6] and [8].
 | TF-IDF + LR as a baseline, compared with LinearSVM and NB | [3], [7], [17] |
 | Fine-tuned XLM-R as the main model, not a prompted LLM | [6], [14], [15], [17] |
 | Recall on the scam class as the primary metric, FPR as the constraint | [7], [11], [12] |
-| Real-only test set; synthetic and translated data for training only | [6], [8], [18], [25] |
+| Planned authentic held-out test set; synthetic and translated data for training, with provenance and family isolation checked | [6], [8], [18], [25] |
 | Hard negatives (benign messages containing scam keywords) | [11], [12] |
 | Accumulating sliding window and a high alert threshold for calls | [11], [13] |
-| Measure STT word error rate for Kazakh; classifier must tolerate ASR noise | [11], [19], [21] |
+| Verify device/locale availability before measuring Kazakh STT WER; test classifier robustness to ASR noise separately | [11], [19], [21] |
 | Separate evaluation slice for code-switched messages | [16], [17], [22] |
 | Explanation via feature weights (baseline) and LIME/SHAP (XLM-R), not attention | [4], [23], [24] |
 | Number reputation and domain rules as extra signals | [5] |
 
 ## 3.5 Gaps the project addresses
 
-1. **No authentic Kazakh/Russian fraud corpus.** Existing Kazakh resources are translated English
-   advertising spam [6], a 189-message pilot [7] or synthetic messages [8].
+1. **Limited evidence for an authentic, representative evaluation corpus.** Reviewed resources
+   include translated English advertising spam [6], a 189-message multilingual pilot [7] and
+   synthetic messages [8]. Their scale, access and suitability need assessment; they do not
+   justify an absolute claim that authentic corpora do not exist. SaqBol's imported course
+   examples and written seeds are not a substitute for collecting documented received messages.
 2. **Code-switching is not evaluated in scam detection.** Kazakh–Russian code-switching has been
    studied for speech recognition [19] and sentiment [16], [17], but none of the reviewed scam or
    spam detectors reports results on code-switched messages.
-3. **No real-time phone-scam detection for Kazakh or Russian.** Transcript-based work exists for
-   Korean [10], [11] and Chinese [12], [13]. Kazakh STT is the weak link [21].
+3. **Unverified transfer to Kazakh/Russian call scenarios.** The transcript-based studies reviewed
+   here cover Korean [10], [11] and Chinese [12], [13]; their results do not validate SaqBol's
+   target languages. Kazakh STT availability and quality must be established independently [21].
 4. **Explained warnings in a low-resource language.** In the reviewed literature, explainable
    SMS detection exists only for English [4]. None of the reviewed systems combines message content
    with sender reputation and explains the decision in Kazakh or Russian.

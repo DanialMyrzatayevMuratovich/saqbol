@@ -1,12 +1,15 @@
 # 8. Prototype
 
-SaqBol already has a working prototype of every main scenario. This page lists the screens,
-shows real inputs and outputs of the API, and explains how to run the prototype yourself.
+This page inventories prototype screens and API examples from `main` at `91862dc`.
+Implemented code is distinguished from a successful device demonstration: Kazakh speech
+recognition and the real-call scenario are not verified. See
+[implementation evidence](implementation-evidence.md) for current support and pending work.
 
 - **Run it:** `docker compose up -d --build` (see the [README](../README.md#quick-start)), then open
   http://localhost:3000 for the web dashboard. The mobile app is built from `saqbol-mobile/` with
   `--dart-define=API_BASE_URL=…`.
-- **Screenshots:** [`docs/prototype/`](prototype/) (task SAQ-35).
+- **Screenshots:** proposed in [PR #16](https://github.com/DanialMyrzatayevMuratovich/saqbol/pull/16)
+  (task SAQ-35); they are not part of this `main` snapshot.
 
 ## 8.1 Key user scenarios and screens
 
@@ -15,10 +18,10 @@ shows real inputs and outputs of the API, and explains how to run the prototype 
 | # | Scenario | Screen(s) | What the user sees |
 |---|---|---|---|
 | S1 | Register / log in (UC-1) | `login_screen.dart` | Phone + password; language switch (ҚАЗ / РУС) |
-| S2 | Check a suspicious SMS (UC-2, UC-3) | `sms_check_screen.dart`, `verdict_card.dart`, `highlighted_message.dart` | Verdict card (safe / suspicious / scam, probability, category), the message with trigger phrases highlighted, advice |
-| S3 | Turn on protection (UC-5, UC-6) | `guard_screen.dart` | Permission requests (SMS, notifications, call-screening role), inbox scan with a summary of dangerous messages, notification on a scam SMS or a call from a high-risk number |
-| S4 | Live call analysis (UC-7) | `voice_screen.dart` | Live transcript; risk indicator; red full-screen alert with vibration when the risk passes the threshold |
-| S5 | History and feedback (UC-9, UC-10) | `history_screen.dart` | Past checks (SMS and calls); "confirmed scam" / "false alarm" buttons |
+| S2 | Check a suspicious SMS and give feedback (UC-2, UC-3, UC-9) | `sms_check_screen.dart`, `verdict_card.dart`, `highlighted_message.dart` | Verdict card (safe / suspicious / scam, probability, category), highlighted trigger phrases and advice; "confirmed scam" / "false alarm" buttons when the result has a message ID |
+| S3 | Turn on protection (UC-5, UC-6) | `guard_screen.dart` | Permission and inbox-scan UI, intended SMS/call warnings; Android permission, background and call-screening behavior still require device verification |
+| S4 | Live call analysis (UC-7) | `voice_screen.dart` | Recognised or manually entered transcript, risk indicator and inline alert; the controller requests Russian recognition (`ru_RU`) and calls haptic/sound APIs. Real-call behavior is unverified; the full-screen alert is a separate PR #20 change. |
+| S5 | History (UC-10) | `history_screen.dart` | Read-only list of previously checked SMS with verdict, category, date and probability. Feedback is on the SMS verdict card; stored call sessions are not returned by the current history endpoint. |
 
 ### Web dashboard (Next.js, admin only)
 
@@ -30,8 +33,11 @@ shows real inputs and outputs of the API, and explains how to run the prototype 
 
 ## 8.2 API examples
 
-The ML outputs below come from the real baseline model (`baseline-tfidf-logreg-v1`, trained on
-2026-10-10), run on 2026-10-22. The backend adds `message_id` and stores the result.
+The original prototype documentation records the SMS outputs below for the development
+baseline (`baseline-tfidf-logreg-v1`, trained on 2026-10-10), with a run date of 2026-10-22.
+They were not rerun as part of this documentation correction and are examples, not a held-out
+quality evaluation or evidence that the input texts are authentic received SMS. The backend
+contract adds `message_id` and stores the result.
 
 ### Register
 
@@ -128,8 +134,10 @@ GET /api/v1/numbers/%2B77770001100/risk
 ← {"verdict": "scam", "probability": 0.93, "category": "fake_bank", "triggers": ["смс кодын", "қауіпсіздік қызметі"], "advice": "…", "alert": true}
 ```
 
-The WebSocket exchange shows the message shape. Its probabilities are illustrative; the real
-values depend on the model version.
+The WebSocket exchange shows manually supplied Kazakh text and the message shape. Its
+probabilities are illustrative; actual values depend on the model version. This is not a
+recorded speech-recognition test and does not demonstrate Kazakh STT. The current controller
+requests `ru_RU`; even PR #20 at `f361a8f` maps the Kazakh UI setting to `ru_RU`.
 
 ### Feedback
 
@@ -140,6 +148,12 @@ POST /api/v1/reports
 
 ## 8.3 Limitations visible in the prototype
 
+- Kazakh speech recognition is planned, not implemented. Device tests for Russian recognition,
+  microphone access during calls, word error rate and alert latency are still pending.
+- SaqBol receives transcript text, not microphone audio. The OS speech service may process
+  audio locally or through its provider; the app does not enforce local-only recognition.
+- Call transcripts are stored in `call_sessions`, but the history screen/API exposes checked
+  SMS only. Call-history integration remains pending.
 - Advice texts come from the rule engine and are in Russian even when the message is in Kazakh.
   Kazakh advice is planned together with FR-18.
 - The single-token triggers produced by the model ("банка", "служба") are less useful to the
