@@ -3,9 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'features/auth/auth_controller.dart';
 import 'features/auth/login_screen.dart';
+import 'features/history/history_providers.dart';
 import 'features/home/home_screen.dart';
+import 'features/home/shell_tab.dart';
 import 'features/onboarding/onboarding_controller.dart';
 import 'features/onboarding/onboarding_screen.dart';
+import 'features/sms/sms_controller.dart';
+import 'features/voice/voice_controller.dart';
 import 'shared/app_theme.dart';
 import 'shared/brand.dart';
 import 'shared/theme_controller.dart';
@@ -33,6 +37,16 @@ class _Gate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Nothing from one account may show up after logging in to the next one.
+    ref.listen<AuthState>(authControllerProvider, (previous, next) {
+      if (previous?.status == AuthStatus.authenticated && next.status != AuthStatus.authenticated) {
+        ref.invalidate(historyProvider);
+        ref.invalidate(smsControllerProvider);
+        ref.invalidate(voiceControllerProvider);
+        ref.invalidate(shellTabProvider);
+      }
+    });
+
     final onboarded = ref.watch(onboardingControllerProvider);
     if (!onboarded.hasValue) return const _Splash();
     if (onboarded.value != true) return const OnboardingScreen();

@@ -70,7 +70,10 @@ class VoiceController extends Notifier<VoiceState> {
 
   @override
   VoiceState build() {
-    ref.onDispose(() => _socket?.close());
+    ref.onDispose(() {
+      _socket?.close();
+      _speech.stop();
+    });
     return const VoiceState();
   }
 

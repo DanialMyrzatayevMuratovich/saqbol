@@ -3,11 +3,15 @@ import 'package:dio/dio.dart';
 import 'token_storage.dart';
 
 class AuthInterceptor extends Interceptor {
-  AuthInterceptor(this._storage, this._refreshDio, this._apiPrefix);
+  AuthInterceptor(this._storage, this._refreshDio, this._apiPrefix, {this.onSessionExpired});
 
   final TokenStorage _storage;
   final Dio _refreshDio;
   final String _apiPrefix;
+
+  /// Called when the server rejects the refresh token too, e.g. after it was
+  /// restarted and forgot its sessions. The tokens are gone by then.
+  final void Function()? onSessionExpired;
 
   bool _isAuthPath(String path) => path.contains('/auth/');
 
@@ -51,6 +55,7 @@ class AuthInterceptor extends Interceptor {
   Future<bool> _refreshTokens() async {
     final refreshToken = await _storage.readRefresh();
     if (refreshToken == null) {
+      onSessionExpired?.call();
       return false;
     }
 
@@ -66,6 +71,7 @@ class AuthInterceptor extends Interceptor {
       return true;
     } on DioException {
       await _storage.clear();
+      onSessionExpired?.call();
       return false;
     }
   }

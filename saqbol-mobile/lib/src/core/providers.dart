@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../features/auth/auth_controller.dart';
 import '../features/auth/auth_repository.dart';
 import '../features/guard/sms_reader.dart';
 import '../features/history/history_repository.dart';
@@ -55,7 +56,13 @@ final dioProvider = Provider<Dio>((ref) {
 
   final dio = Dio(options);
   final refreshDio = Dio(options);
-  dio.interceptors.add(AuthInterceptor(storage, refreshDio, config.apiPrefix));
+  dio.interceptors.add(AuthInterceptor(
+    storage,
+    refreshDio,
+    config.apiPrefix,
+    // Back to the login screen instead of failing every request from now on.
+    onSessionExpired: () => ref.read(authControllerProvider.notifier).sessionExpired(),
+  ));
   return dio;
 });
 
