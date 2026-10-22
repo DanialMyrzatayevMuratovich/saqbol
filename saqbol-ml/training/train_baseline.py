@@ -16,9 +16,10 @@ MODEL_DIR = os.getenv("MODEL_DIR", "models")
 MODEL_VERSION = os.getenv("MODEL_VERSION", "baseline-tfidf-logreg-v1")
 
 
-def load_dataset(path: str) -> tuple[list[str], list[int]]:
+def load_dataset(path: str) -> tuple[list[str], list[int], list[str]]:
     texts: list[str] = []
     labels: list[int] = []
+    groups: list[str] = []
     with open(path, encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
@@ -27,7 +28,10 @@ def load_dataset(path: str) -> tuple[list[str], list[int]]:
             # surface through the mid probability band, which is where the
             # service's SUSPICIOUS_THRESHOLD picks them up.
             labels.append(1 if row["label"] == "scam" else 0)
-    return texts, labels
+            # A translation is the same message again, so it shares a fold with
+            # the row it was translated from.
+            groups.append(template_of(row.get("translated_from") or row["text"]))
+    return texts, labels, groups
 
 
 def template_of(text: str) -> str:
@@ -52,10 +56,9 @@ def build_pipeline() -> Pipeline:
 
 
 def main() -> None:
-    texts, labels = load_dataset(DATA_PATH)
+    texts, labels, groups = load_dataset(DATA_PATH)
     pipeline = build_pipeline()
 
-    groups = [template_of(text) for text in texts]
     predictions = cross_val_predict(
         pipeline, texts, labels, cv=GroupKFold(n_splits=5), groups=groups
     )
