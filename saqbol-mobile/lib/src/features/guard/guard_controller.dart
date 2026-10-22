@@ -115,8 +115,10 @@ class GuardController extends Notifier<GuardState> {
       }
 
       state = state.copyWith(status: GuardStatus.ready);
-    } catch (error) {
-      state = state.copyWith(status: GuardStatus.failed, error: error.toString());
+    } catch (_) {
+      // No error text: the screen shows the localised "scan failed" instead of
+      // an exception string.
+      state = state.copyWith(status: GuardStatus.failed);
     }
   }
 
