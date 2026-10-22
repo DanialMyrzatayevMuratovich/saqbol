@@ -15,6 +15,13 @@ The model is `baseline-tfidf-logreg-v1`. Only a demo account (`+77000000001`) an
 sender numbers (`+7701555xxxx`, `+7701123xxxx`) are used. The scam texts are written after the
 schemes in the [relevance evidence](../02-relevance-evidence.md).
 
+For every capture, record its source commit, device/emulator and whether input was typed or
+recognised from speech. A Kazakh text verdict or a manually injected call fragment is not proof
+of Kazakh speech recognition. A model screenshot labelled `real-only` refers to the legacy
+source-selected course/seed cohort unless an authenticated received-SMS dataset is explicitly
+documented; caption or recapture that label before using it as evaluation evidence. See the
+[implementation/evidence record](../implementation-evidence.md).
+
 ## Mobile app
 
 | Screenshot | Scenario | What it shows |
