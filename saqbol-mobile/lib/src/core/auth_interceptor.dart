@@ -9,8 +9,8 @@ class AuthInterceptor extends Interceptor {
   final Dio _refreshDio;
   final String _apiPrefix;
 
-  /// Called when the server rejects the refresh token too, e.g. after it was
-  /// restarted and forgot its sessions. The tokens are gone by then.
+  /// Called when the server rejects the refresh token too: the 7-day session
+  /// ran out or the server no longer has it. The tokens are gone by then.
   final void Function()? onSessionExpired;
 
   bool _isAuthPath(String path) => path.contains('/auth/');
