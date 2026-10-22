@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../features/auth/auth_controller.dart';
 import '../features/auth/auth_repository.dart';
 import '../features/guard/sms_reader.dart';
 import '../features/history/history_repository.dart';
@@ -9,6 +10,9 @@ import '../features/reports/reports_repository.dart';
 import '../features/sms/sms_repository.dart';
 import 'app_config.dart';
 import 'auth_interceptor.dart';
+import 'credentials_storage.dart';
+import 'locale_storage.dart';
+import 'preferences_storage.dart';
 import 'token_storage.dart';
 
 final appConfigProvider = Provider<AppConfig>((ref) {
@@ -17,6 +21,26 @@ final appConfigProvider = Provider<AppConfig>((ref) {
 
 final tokenStorageProvider = Provider<TokenStorage>((ref) {
   return TokenStorage(const FlutterSecureStorage());
+});
+
+final credentialsStorageProvider = Provider<CredentialsStorage>((ref) {
+  return CredentialsStorage(const FlutterSecureStorage());
+});
+
+final localeStorageProvider = Provider<LocaleStorage>((ref) {
+  return LocaleStorage(const FlutterSecureStorage());
+});
+
+final themeStorageProvider = Provider<ThemeStorage>((ref) {
+  return ThemeStorage(const FlutterSecureStorage());
+});
+
+final guardPrefsProvider = Provider<GuardPrefs>((ref) {
+  return GuardPrefs(const FlutterSecureStorage());
+});
+
+final onboardingStorageProvider = Provider<OnboardingStorage>((ref) {
+  return OnboardingStorage(const FlutterSecureStorage());
 });
 
 final dioProvider = Provider<Dio>((ref) {
@@ -32,7 +56,13 @@ final dioProvider = Provider<Dio>((ref) {
 
   final dio = Dio(options);
   final refreshDio = Dio(options);
-  dio.interceptors.add(AuthInterceptor(storage, refreshDio, config.apiPrefix));
+  dio.interceptors.add(AuthInterceptor(
+    storage,
+    refreshDio,
+    config.apiPrefix,
+    // Back to the login screen instead of failing every request from now on.
+    onSessionExpired: () => ref.read(authControllerProvider.notifier).sessionExpired(),
+  ));
   return dio;
 });
 

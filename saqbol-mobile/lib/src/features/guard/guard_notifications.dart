@@ -1,5 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../../core/locale_storage.dart';
+import '../../core/strings.dart';
 import '../sms/sms_models.dart';
 
 /// Local alerts raised when the guard classifies a message as dangerous.
@@ -9,15 +12,6 @@ import '../sms/sms_models.dart';
 class GuardNotifications {
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
-
-  static const AndroidNotificationDetails _androidDetails =
-      AndroidNotificationDetails(
-    'saqbol_guard',
-    'SaqBol',
-    channelDescription: 'Оповещения о мошеннических сообщениях',
-    importance: Importance.max,
-    priority: Priority.high,
-  );
 
   static bool _initialised = false;
 
@@ -36,14 +30,25 @@ class GuardNotifications {
   static Future<void> showScamAlert(SmsCheckResult result, String sender) async {
     await init();
 
+    // Read from storage rather than a provider: this also runs in the
+    // background isolate, where the saved language is all there is.
+    final code = await LocaleStorage(const FlutterSecureStorage()).read();
+    final strings = AppStrings(localeFromCode(code));
     final percent = (result.probability * 100).round();
-    final from = sender.isEmpty ? '' : ' от $sender';
 
     await _plugin.show(
       result.messageId.hashCode,
-      '⚠️ Мошенническое SMS$from',
-      '$percent% — ${result.advice}',
-      const NotificationDetails(android: _androidDetails),
+      strings.scamSmsAlert(sender),
+      '$percent% — ${strings.advice(result.category, result.advice)}',
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'saqbol_guard',
+          'SaqBol',
+          channelDescription: strings.guardChannelDescription,
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
     );
   }
 }

@@ -105,10 +105,28 @@ class CallGuardService : CallScreeningService() {
         }
 
         val percent = (risk.score * 100).toInt()
+        val locale = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getString(KEY_LOCALE, null)
+        val title: String
+        val text: String
+        when (locale) {
+            "kk" -> {
+                title = "⚠️ Күдікті қоңырау: $number"
+                text = "Қауіп $percent% — шағымдар: ${risk.reports}"
+            }
+            "en" -> {
+                title = "⚠️ Suspicious call: $number"
+                text = "Risk $percent% — reports: ${risk.reports}"
+            }
+            else -> {
+                title = "⚠️ Подозрительный звонок: $number"
+                text = "Риск $percent% — жалоб: ${risk.reports}"
+            }
+        }
         val notification = Notification.Builder(this, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.stat_sys_warning)
-            .setContentTitle("⚠️ Подозрительный звонок: $number")
-            .setContentText("Риск $percent% — жалоб: ${risk.reports}")
+            .setContentTitle(title)
+            .setContentText(text)
             .setAutoCancel(true)
             .build()
 
@@ -129,6 +147,7 @@ class CallGuardService : CallScreeningService() {
         const val PREFS = "saqbol_guard"
         const val KEY_TOKEN = "access_token"
         const val KEY_API_BASE = "api_base_url"
+        const val KEY_LOCALE = "locale"
         private const val CHANNEL_ID = "saqbol_calls"
     }
 }

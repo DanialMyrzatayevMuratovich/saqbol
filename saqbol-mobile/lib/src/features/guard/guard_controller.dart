@@ -71,10 +71,14 @@ class GuardController extends Notifier<GuardState> {
     );
   }
 
+  /// Permission can be granted or revoked in system settings while the app is
+  /// alive, so this both raises and clears [GuardStatus.needsPermission].
   Future<void> refreshPermission() async {
     final granted = await ref.read(smsReaderProvider).hasPermission();
     if (!granted) {
       state = state.copyWith(status: GuardStatus.needsPermission);
+    } else if (state.status == GuardStatus.needsPermission) {
+      state = state.copyWith(status: GuardStatus.idle);
     }
   }
 
@@ -131,6 +135,17 @@ class GuardController extends Notifier<GuardState> {
       onBackgroundMessage: handleBackgroundSms,
     );
     state = state.copyWith(watching: true);
+    await ref.read(guardPrefsProvider).setSmsGuardOn();
+  }
+
+  /// Starts the SMS listener again after a restart if the user had turned it on
+  /// and the permission is still granted. Also refreshes the call-screening role.
+  Future<void> restore() async {
+    await refreshCallGuard();
+    if (state.watching) return;
+    if (!await ref.read(guardPrefsProvider).isSmsGuardOn()) return;
+    if (!await ref.read(smsReaderProvider).hasPermission()) return;
+    await startWatching();
   }
 
   /// Hands the app the system call-screening role and mirrors the credentials
