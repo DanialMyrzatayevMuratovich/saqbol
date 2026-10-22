@@ -24,17 +24,16 @@ and **Apate.ai** (B2B only, no consumer app).
 
 | # | Criterion | Google Scam Detection | Truecaller | Kaspersky Who Calls | Trend Micro ScamCheck | KZ operator antifraud | **SaqBol (target)** |
 |---|---|---|---|---|---|---|---|
-| C1 | Analyses **Kazakh** text / speech | ❌ | ❌ | ❌ | ❌ | n/a (no content analysis) | ✅ |
-| C2 | Analyses **Russian** text / speech | ❌ | ? (Russian UI only) | ❌ (Russian UI only) | ❌ | n/a | ✅ |
-| C3 | Analyses **SMS content** | ✅ | ⚠️ India, Android only | ⚠️ links only, Premium | ✅ | ⚠️ behavioural, not content | ✅ |
-| C4 | Analyses **call content in real time** | ⚠️ Pixel only, listed countries | ⚠️ synthetic-voice detection, US only | ❌ | ⚠️ video calls only | ❌ | ⚠️ speakerphone + OS STT; current Russian locale, Kazakh speech pending |
-| C5 | **Number reputation** | ⚠️ | ✅ large database *(vendor claim)* | ✅ community labels | ⚠️ US, CA, JP, IT, TW only | ✅ network-level blocking | ⚠️ crowd-sourced from own users, small base |
-| C6 | **Explains** the warning to the user | ⚠️ "Likely scam" label | ⚠️ spam-report statistics | ⚠️ category / organisation label | ✅ "see why something is risky" | ❌ silent blocking | ✅ trigger phrases + category + advice |
-| C7 | **Platforms** | ⚠️ Android; calls on Pixel only | ✅ Android, iOS | ✅ Android, iOS | ✅ Android 15+, iOS 17+ | ✅ any phone | ⚠️ Android full; iOS manual check + live call |
-| C8 | **Privacy** of message / call content | ✅ on-device (opt-in cloud mode) | ⚠️ on-device for SMS *(vendor claim)*; asks for contacts | ⚠️ | ? | ❌ operator-side | ⚠️ text sent to SaqBol server; OS recogniser may process audio remotely |
-| C9 | **Available in Kazakhstan** | ❌ not in country lists | ✅ | ✅ | ❌ (not in KZ App Store) | ✅ by default | ✅ (prototype) |
-| C10 | **Price for the user** | ? | Freemium, Premium 599 ₸ / month | Freemium, Premium 599 ₸ / month | $1.99–6.99 / month | Included | Free |
-| C11 | Aware of **Kazakhstan-specific schemes** | ? | ? | ⚠️ published KZ data (2022) | ? | ✅ | ✅ categories built for local schemes |
+| C1 | Analyses **Kazakh / Russian** text / speech | ❌ | ❌ Kazakh; ? Russian (Russian UI only) | ❌ (Russian UI only) | ❌ | n/a (no content analysis) | ✅ |
+| C2 | Analyses **SMS content** | ✅ | ⚠️ India, Android only | ⚠️ links only, Premium | ✅ | ⚠️ behavioural, not content | ✅ |
+| C3 | Analyses **call content in real time** | ⚠️ Pixel only, listed countries | ⚠️ synthetic-voice detection, US only | ❌ | ⚠️ video calls only | ❌ | ⚠️ speakerphone + OS STT; current Russian locale, Kazakh speech pending |
+| C4 | **Number reputation** | ⚠️ | ✅ large database *(vendor claim)* | ✅ community labels | ⚠️ US, CA, JP, IT, TW only | ✅ network-level blocking | ⚠️ crowd-sourced from own users, small base |
+| C5 | **Explains** the warning to the user | ⚠️ "Likely scam" label | ⚠️ spam-report statistics | ⚠️ category / organisation label | ✅ "see why something is risky" | ❌ silent blocking | ✅ trigger phrases + category + advice |
+| C6 | **Platforms** | ⚠️ Android; calls on Pixel only | ✅ Android, iOS | ✅ Android, iOS | ✅ Android 15+, iOS 17+ | ✅ any phone | ⚠️ Android full; iOS manual check + live call |
+| C7 | **Privacy** of message / call content | ✅ on-device (opt-in cloud mode) | ⚠️ on-device for SMS *(vendor claim)*; asks for contacts | ⚠️ | ? | ❌ operator-side | ⚠️ text sent to SaqBol server; OS recogniser may process audio remotely |
+| C8 | **Available in Kazakhstan** | ❌ not in country lists | ✅ | ✅ | ❌ (not in KZ App Store) | ✅ by default | ✅ (prototype) |
+| C9 | **Price for the user** | ? | Freemium, Premium 599 ₸ / month | Freemium, Premium 599 ₸ / month | $1.99–6.99 / month | Included | Free |
+| C10 | Aware of **Kazakhstan-specific schemes** | ? | ? | ⚠️ published KZ data (2022) | ? | ✅ | ✅ categories built for local schemes |
 
 ### What the comparison shows
 
