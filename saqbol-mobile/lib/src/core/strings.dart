@@ -64,6 +64,27 @@ class AppStrings {
         'Sender (optional)',
       );
   String get checkButton => _t('Проверить', 'Тексеру', 'Check');
+  // Server errors by status code, so no English server text reaches the screen.
+  String get invalidCredentials => _t(
+        'Неверный телефон или пароль',
+        'Телефон немесе құпия сөз қате',
+        'Wrong phone or password',
+      );
+  String get phoneTaken => _t(
+        'Этот номер уже зарегистрирован',
+        'Бұл нөмір бұрын тіркелген',
+        'This number is already registered',
+      );
+  String get checkLoginInput => _t(
+        'Проверьте телефон и пароль: пароль не короче 6 символов',
+        'Телефон мен құпия сөзді тексеріңіз: құпия сөз кемінде 6 таңба',
+        'Check the phone and password: the password needs at least 6 characters',
+      );
+  String get tooManyRequests => _t(
+        'Слишком много запросов. Подождите минуту.',
+        'Сұраулар тым көп. Бір минут күтіңіз.',
+        'Too many requests. Wait a minute.',
+      );
   String get checkFailed => _t(
         'Проверка не удалась. Попробуйте ещё раз.',
         'Тексеру сәтсіз аяқталды. Қайталап көріңіз.',

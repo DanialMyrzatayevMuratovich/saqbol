@@ -63,12 +63,16 @@ class AuthController extends Notifier<AuthState> {
     }
   }
 
+  /// The server answers in English; the user gets the reason in their language.
   String _messageFrom(DioException error) {
-    final data = error.response?.data;
-    if (data is Map && data['error'] is String) {
-      return data['error'] as String;
-    }
-    return ref.read(stringsProvider).requestFailed;
+    final strings = ref.read(stringsProvider);
+    return switch (error.response?.statusCode) {
+      401 => strings.invalidCredentials,
+      409 => strings.phoneTaken,
+      400 => strings.checkLoginInput,
+      429 => strings.tooManyRequests,
+      _ => strings.requestFailed,
+    };
   }
 }
 

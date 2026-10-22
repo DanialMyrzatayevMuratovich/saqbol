@@ -25,12 +25,10 @@ class SmsController extends Notifier<AsyncValue<SmsCheckResult?>> {
     state = const AsyncData(null);
   }
 
+  /// Never shows the server's English text.
   String _messageFrom(DioException error) {
-    final data = error.response?.data;
-    if (data is Map && data['error'] is String) {
-      return data['error'] as String;
-    }
-    return ref.read(stringsProvider).checkFailed;
+    final strings = ref.read(stringsProvider);
+    return error.response?.statusCode == 429 ? strings.tooManyRequests : strings.checkFailed;
   }
 }
 
