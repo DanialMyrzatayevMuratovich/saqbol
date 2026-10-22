@@ -54,9 +54,32 @@ void main() {
       en.transcript,
       en.manualFragment,
       en.historyEmpty,
-      en.historyLoadFailed('timeout'),
+      en.historyLoadFailed,
       en.feedbackFailed,
       en.modelVersion('v1'),
+      en.onbBody1,
+      en.onbFeature1Body,
+      en.onbFeature2Body,
+      en.onbFeature3Body,
+      en.onbBody3,
+      en.onbConsent,
+      en.protectedBody,
+      en.partialBody,
+      en.offBody,
+      en.checkMessageCtaBody,
+      en.noThreats,
+      en.checkIntro,
+      en.riskLabel(39),
+      en.callIntro,
+      en.alertTitle,
+      en.alertReasons,
+      en.notScammer,
+      en.unknownSender,
+      en.nothingMatches,
+      en.profileSubtitle,
+      en.scanInboxSubtitle,
+      en.privacyBody,
+      en.androidOnly,
       for (final verdict in ['scam', 'suspicious', 'safe'])
         en.verdictLabel(verdict),
       for (final category in [
@@ -73,6 +96,30 @@ void main() {
     for (final sample in samples) {
       expect(cyrillic.hasMatch(sample), isFalse, reason: sample);
     }
+  });
+
+  test('onboarding does not promise kazakh speech recognition on calls', () {
+    expect(ru.onbBody1, contains('только на русском'));
+    expect(ru.onbBody1, contains('казахская речь ещё не поддерживается'));
+    expect(kk.onbBody1, contains('тек орыс тілінде'));
+    expect(kk.onbBody1, contains('қазақша сөйлеуді тану әлі жоқ'));
+    expect(en.onbBody1, contains('Kazakh speech recognition is not available yet'));
+    expect(en.onbBody1, isNot(contains('calls in Kazakh')));
+  });
+
+  test('privacy text separates server storage from what the history shows', () {
+    expect(ru.privacyBody, contains('хранится на сервере, но в истории пока не показывается'));
+    expect(kk.privacyBody, contains('серверде сақталады, бірақ тарихта әзірге көрсетілмейді'));
+    expect(en.privacyBody, contains('stored on the server too, but are not shown in the history yet'));
+    // The consent page says the call text is stored as well.
+    expect(en.onbBody3, contains('stored there'));
+  });
+
+  test('risk is labelled as a risk, not as a confidence in the verdict', () {
+    expect(en.riskLabel(39), contains('39%'));
+    expect(en.riskLabel(39).toLowerCase(), contains('risk'));
+    expect(ru.riskLabel(39), contains('39%'));
+    expect(kk.riskLabel(39), contains('39%'));
   });
 
   test('unknown or missing language code falls back to russian', () {

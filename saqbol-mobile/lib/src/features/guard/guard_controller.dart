@@ -60,6 +60,10 @@ class GuardState {
 }
 
 class GuardController extends Notifier<GuardState> {
+  /// Number of the inbox scan allowed to publish results; [clearScan] moves
+  /// it on, so a scan still running for the previous session stops there.
+  int _scan = 0;
+
   @override
   GuardState build() => const GuardState();
 
@@ -71,10 +75,14 @@ class GuardController extends Notifier<GuardState> {
     );
   }
 
+  /// Permission can be granted or revoked in system settings while the app is
+  /// alive, so this both raises and clears [GuardStatus.needsPermission].
   Future<void> refreshPermission() async {
     final granted = await ref.read(smsReaderProvider).hasPermission();
     if (!granted) {
       state = state.copyWith(status: GuardStatus.needsPermission);
+    } else if (state.status == GuardStatus.needsPermission) {
+      state = state.copyWith(status: GuardStatus.idle);
     }
   }
 
@@ -87,6 +95,7 @@ class GuardController extends Notifier<GuardState> {
       return;
     }
 
+    final scan = ++_scan;
     state = state.copyWith(
       status: GuardStatus.scanning,
       scanned: 0,
@@ -96,6 +105,7 @@ class GuardController extends Notifier<GuardState> {
 
     try {
       final inbox = await reader.readInbox(limit: limit);
+      if (scan != _scan) return;
       state = state.copyWith(total: inbox.length);
 
       final repository = ref.read(smsRepositoryProvider);
@@ -105,6 +115,7 @@ class GuardController extends Notifier<GuardState> {
         final end =
             start + _batchSize < inbox.length ? start + _batchSize : inbox.length;
         final results = await repository.checkBatch(inbox.sublist(start, end));
+        if (scan != _scan) return;
 
         findings.addAll(results.where((item) => item.verdict != 'safe'));
         state = state.copyWith(scanned: end, findings: List.of(findings));
@@ -112,10 +123,23 @@ class GuardController extends Notifier<GuardState> {
 
       state = state.copyWith(status: GuardStatus.ready);
     } catch (_) {
+      if (scan != _scan) return;
       // No error text: the screen shows the localised "scan failed" instead of
       // an exception string.
       state = state.copyWith(status: GuardStatus.failed);
     }
+  }
+
+  /// The session ended: forget the scan results and stop a running scan from
+  /// adding more. The SMS listener and the call-screening role stay as they are.
+  void clearScan() {
+    _scan++;
+    state = state.copyWith(
+      status: state.status == GuardStatus.needsPermission ? GuardStatus.needsPermission : GuardStatus.idle,
+      scanned: 0,
+      total: 0,
+      findings: const [],
+    );
   }
 
   /// Starts watching for new messages. Foreground arrivals are checked here;
@@ -133,6 +157,17 @@ class GuardController extends Notifier<GuardState> {
       onBackgroundMessage: handleBackgroundSms,
     );
     state = state.copyWith(watching: true);
+    await ref.read(guardPrefsProvider).setSmsGuardOn();
+  }
+
+  /// Starts the SMS listener again after a restart if the user had turned it on
+  /// and the permission is still granted. Also refreshes the call-screening role.
+  Future<void> restore() async {
+    await refreshCallGuard();
+    if (state.watching) return;
+    if (!await ref.read(guardPrefsProvider).isSmsGuardOn()) return;
+    if (!await ref.read(smsReaderProvider).hasPermission()) return;
+    await startWatching();
   }
 
   /// Hands the app the system call-screening role and mirrors the credentials

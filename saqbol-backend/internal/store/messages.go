@@ -2,7 +2,9 @@ package store
 
 import (
 	"context"
+	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -84,8 +86,9 @@ func (r *MessageRepo) SourceNumber(ctx context.Context, messageID string) (strin
 	return number, err
 }
 
-func (r *MessageRepo) ListByUser(ctx context.Context, userID, channel string, limit int) ([]MessageHistoryItem, error) {
-	rows, err := r.pool.Query(ctx, `
+// historySelect reads checked messages with the category and triggers of their
+// latest detection; callers add WHERE, ORDER BY and LIMIT.
+const historySelect = `
 		SELECT m.id::text,
 		       m.channel::text,
 		       m.raw_text,
@@ -102,7 +105,10 @@ func (r *MessageRepo) ListByUser(ctx context.Context, userID, channel string, li
 			ORDER BY d.created_at DESC
 			LIMIT 1
 		) d ON true
-		LEFT JOIN scam_categories c ON c.id = d.category_id
+		LEFT JOIN scam_categories c ON c.id = d.category_id`
+
+func (r *MessageRepo) ListByUser(ctx context.Context, userID, channel string, limit int) ([]MessageHistoryItem, error) {
+	rows, err := r.pool.Query(ctx, historySelect+`
 		WHERE m.user_id = $1 AND ($2 = '' OR m.channel::text = $2)
 		ORDER BY m.created_at DESC
 		LIMIT $3`,
@@ -111,6 +117,50 @@ func (r *MessageRepo) ListByUser(ctx context.Context, userID, channel string, li
 	if err != nil {
 		return nil, err
 	}
+	return scanHistory(rows)
+}
+
+// HistorySummary is what the mobile Home screen shows: one user's totals since
+// a moment, counted over all their checks, and their newest scam or suspicious
+// messages of any age.
+type HistorySummary struct {
+	Since      time.Time            `json:"since"`
+	Checked    int                  `json:"checked"`
+	Scam       int                  `json:"scam"`
+	Suspicious int                  `json:"suspicious"`
+	Threats    []MessageHistoryItem `json:"threats"`
+}
+
+func (r *MessageRepo) SummaryByUser(ctx context.Context, userID string, since time.Time, threats int) (HistorySummary, error) {
+	summary := HistorySummary{Since: since}
+	err := r.pool.QueryRow(ctx, `
+		SELECT count(*),
+		       count(*) FILTER (WHERE verdict = 'scam'),
+		       count(*) FILTER (WHERE verdict = 'suspicious')
+		FROM messages
+		WHERE user_id = $1 AND created_at >= $2`,
+		userID, since,
+	).Scan(&summary.Checked, &summary.Scam, &summary.Suspicious)
+	if err != nil {
+		return HistorySummary{}, err
+	}
+
+	rows, err := r.pool.Query(ctx, historySelect+`
+		WHERE m.user_id = $1 AND m.verdict IN ('scam', 'suspicious')
+		ORDER BY m.created_at DESC
+		LIMIT $2`,
+		userID, threats,
+	)
+	if err != nil {
+		return HistorySummary{}, err
+	}
+	if summary.Threats, err = scanHistory(rows); err != nil {
+		return HistorySummary{}, err
+	}
+	return summary, nil
+}
+
+func scanHistory(rows pgx.Rows) ([]MessageHistoryItem, error) {
 	defer rows.Close()
 
 	items := make([]MessageHistoryItem, 0)

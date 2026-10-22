@@ -17,4 +17,11 @@ class HistoryRepository {
         .map((item) => HistoryItem.fromJson(item as Map<String, dynamic>))
         .toList();
   }
+
+  /// Totals of the last [days] days, counted on the server: a page of
+  /// [list] holds at most 200 checks, and one inbox scan alone can add 200.
+  Future<HistorySummary> summary({int days = 7}) async {
+    final response = await _dio.get('/history/summary', queryParameters: {'days': days});
+    return HistorySummary.fromJson(response.data as Map<String, dynamic>);
+  }
 }

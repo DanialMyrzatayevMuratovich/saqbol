@@ -33,6 +33,7 @@ All service addresses (`DATABASE_URL`, `REDIS_URL`, `ML_GRPC_ADDR`) come from en
 | POST | `/api/v1/call/analyze` | yes | Analyze a full transcript |
 | POST | `/api/v1/reports` | yes | User feedback (confirmed / false_positive) |
 | GET | `/api/v1/history` | yes | Check history |
+| GET | `/api/v1/history/summary?days=7` | yes | Check, scam and suspicious counts for the last `days` days (1-90, default 7) and the 3 newest threats |
 | GET | `/api/v1/admin/metrics` | yes | Aggregated metrics |
 | WS | `/ws/call?token=<access>` | yes | Stream transcript fragments, receive real-time alerts |
 | GET | `/health` | no | Liveness + DB ping |

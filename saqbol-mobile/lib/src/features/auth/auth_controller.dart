@@ -53,6 +53,13 @@ class AuthController extends Notifier<AuthState> {
     state = state.copyWith(status: AuthStatus.unauthenticated);
   }
 
+  /// The server no longer accepts this session; the tokens are already cleared.
+  void sessionExpired() {
+    if (state.status == AuthStatus.authenticated) {
+      state = state.copyWith(status: AuthStatus.unauthenticated);
+    }
+  }
+
   Future<void> _run(Future<void> Function() action) async {
     state = state.copyWith(submitting: true, error: null);
     try {

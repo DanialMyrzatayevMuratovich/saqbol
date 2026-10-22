@@ -37,10 +37,14 @@ class HighlightedMessage extends StatelessWidget {
       }
       spans.add(TextSpan(
         text: text.substring(range.start, range.end),
+        // The words keep the normal text colour: verdict-coloured text on its
+        // own tint stays under 4.5:1. The tint and underline mark them.
         style: TextStyle(
           backgroundColor: highlightColor.withValues(alpha: 0.22),
-          color: highlightColor,
           fontWeight: FontWeight.w600,
+          decoration: TextDecoration.underline,
+          decorationColor: highlightColor,
+          decorationThickness: 2,
         ),
       ));
       cursor = range.end;
