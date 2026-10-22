@@ -19,8 +19,8 @@ The project aim ([proposal](01-project-proposal.md#13-aim)) is reached when we c
 | API integration | Every `/api/v1` endpoint: status codes, validation, auth (401), admin role (403), ownership (404 on another user's message) | Go `httptest` + mock classifier + test Postgres | — | SAQ-34 |
 | End-to-end | Fresh clone → `docker compose up` → register → SMS check → verdict `scam` with `model_version` | Smoke script from `CLAUDE.md` | Manual | Run in CI on pull requests |
 | ML evaluation | Protocol in 9.4 | `training/evaluate.py`, Colab notebook | Partial (9.3) | SAQ-22 |
-| Real-time call | Protocol in 9.5 | Scripted calls, device logs | — | SAQ-23, SAQ-24 |
-| Performance | Protocol in 9.6 | `hey` or a Go/Python load script; backend Prometheus metrics | — | SAQ-24 |
+| Real-time call | Protocol in 9.5 | Scripted calls, device logs | Server part on 5 scripted calls (9.6.1) | Speech on real phones: SAQ-23, SAQ-51 |
+| Performance | Protocol in 9.6 | `saqbol-backend/cmd/latency`; backend Prometheus metrics | First local run (9.6.1) | Run on the demo server (SAQ-29) |
 | Device | Android: SMS permission, inbox scan, incoming SMS notification, call screening on at least 2 devices (Android 10+); iOS: manual check and live call | Physical devices | Manual on one device | Checklist per release |
 | Usability | Protocol in 9.7 | SUS questionnaire, observation notes | — | SAQ-30 |
 | Security | Secrets not in Git, JWT secrets required, rate limit, admin role, input limits | Code review, `gitleaks`, manual API checks | Partly | Before each pre-defense |
@@ -132,6 +132,54 @@ repetition. Device models, OS versions and the network are recorded with the res
 - **Inbox scan:** time to check 100 messages through `/sms/check/batch`.
 - **Conditions:** the deployment configuration (Docker Compose or k3s), CPU and RAM of the server,
   model version and network are recorded for every run.
+
+### 9.6.1 First measurement (2026-10-22, SAQ-24)
+
+Tool: `saqbol-backend/cmd/latency` (`go run ./cmd/latency -api <url> -n 100 -workers 10`), which
+prints the tables below.
+
+**Conditions.**
+- **Machine:** Apple M4 laptop, 10 cores, 16 GB RAM, macOS 26.6.
+- **Stack:** Docker Desktop 29.1.3 (VM: 10 CPUs, 11.7 GB). `docker compose` stack built from
+  `main` at `91862dc`, with the real ML service (`baseline-tfidf-logreg-v1`, `ML_MOCK=false`).
+- **Client:** the client runs on the same machine, so there is no network latency.
+- **Rate limiting:** turned off for the run (`RATE_LIMIT_PER_MIN=0` in a local override), otherwise
+  the limiter answers 429 after 60 requests.
+- **Warm-up:** 5 warm-up requests are not counted.
+
+**SMS check, client side (`POST /api/v1/sms/check`)**
+
+| Run | Requests | Errors | p50 | p95 | p99 | max |
+|---|---|---|---|---|---|---|
+| Sequential | 100 | 0 | 2.1 ms | 3.0 ms | 3.8 ms | 38.4 ms |
+| Parallel, 10 workers | 100 | 0 | 12.0 ms | 15.4 ms | 16.7 ms | 17.6 ms |
+
+Parallel throughput: 100 requests in 124 ms, about 800 requests/s. The model's own time, as stored
+in `detections.latency_ms` over all 505 checks of the run, is 0.7 ms on average, with p95 of 1 ms
+and a maximum of 36 ms (the first call).
+
+**Inbox scan (`POST /api/v1/sms/check/batch`, 100 messages):** 142, 134 and 132 ms in three runs.
+
+**Call alert, server part (`/ws/call`).** Five scripted calls were sent phrase by phrase, as speech
+recognition would deliver them. Each time is from sending a phrase to the server's answer.
+
+| Script | Trigger phrase | Alert at phrase | Answer time at alert | Result |
+|---|---|---|---|---|
+| RU fake bank | 4 | 4 | 1.8 ms | correct |
+| RU fake police | 3 | 3 | 1.7 ms | correct |
+| KK fake bank | 3 | 3 | 1.7 ms | correct |
+| RU courier (benign) | — | no alert | — | correct |
+| RU bank reminder (benign) | — | no alert | — | correct |
+
+**Reading.**
+- The server and model are far below the NFR-1 targets (SMS p95 < 1 s, call alert < 3 s).
+  These are lower bounds. The demo server adds network time, and a call adds on-device speech
+  recognition and rendering.
+- Still to measure:
+  - the same tool against the demo server once it has TLS (SAQ-29);
+  - the full time-to-alert with speech on real phones (§9.5, SAQ-23, SAQ-51).
+- The five call scripts only show that the alert logic works end to end. They are not a
+  detection-rate estimate.
 
 ## 9.7 Usability evaluation
 
