@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../shared/app_theme.dart';
+import '../../shared/locale_switcher.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/providers.dart';
 import '../../core/strings.dart';
 import 'auth_controller.dart';
 
@@ -18,6 +20,43 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   bool _registerMode = false;
+  bool _remember = false;
+  // Credentials of the in-flight submit, saved or cleared once it succeeds.
+  String? _pendingPhone;
+  String? _pendingPassword;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSaved();
+  }
+
+  Future<void> _loadSaved() async {
+    final saved = await ref.read(credentialsStorageProvider).read();
+    if (saved == null || !mounted) return;
+    setState(() {
+      _phoneController.text = saved.phone;
+      _passwordController.text = saved.password;
+      _remember = true;
+    });
+  }
+
+  Future<void> _persistCredentials() async {
+    final storage = ref.read(credentialsStorageProvider);
+    if (_remember && _pendingPhone != null && _pendingPassword != null) {
+      await storage.save(_pendingPhone!, _pendingPassword!);
+    } else {
+      await storage.clear();
+    }
+  }
+
+  /// Unticking deletes the saved phone and password at once. Waiting for the
+  /// next successful login would bring them back if the app is closed or the
+  /// login fails. Ticking saves nothing until a login succeeds.
+  void _setRemember(bool value) {
+    setState(() => _remember = value);
+    if (!value) ref.read(credentialsStorageProvider).clear();
+  }
 
   @override
   void dispose() {
@@ -31,6 +70,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final phone = _phoneController.text.trim();
     final password = _passwordController.text;
     if (phone.isEmpty || password.isEmpty) return;
+    _pendingPhone = phone;
+    _pendingPassword = password;
 
     final controller = ref.read(authControllerProvider.notifier);
     if (_registerMode) {
@@ -45,16 +86,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final state = ref.watch(authControllerProvider);
     final strings = ref.watch(stringsProvider);
 
+    ref.listen<AuthState>(authControllerProvider, (previous, next) {
+      if (previous?.status != AuthStatus.authenticated && next.status == AuthStatus.authenticated && _pendingPhone != null) {
+        _persistCredentials();
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          TextButton(
-            onPressed: () => ref.read(localeControllerProvider.notifier).toggle(),
-            child: Text(ref.watch(localeControllerProvider) == AppLocale.ru ? 'ҚАЗ' : 'РУС'),
-          ),
-        ],
+        actions: const [LocaleSwitcher()],
       ),
       body: SafeArea(
         child: Center(
@@ -108,6 +150,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     labelText: strings.password,
                     border: const OutlineInputBorder(),
                   ),
+                ),
+                CheckboxListTile(
+                  value: _remember,
+                  onChanged: (value) => _setRemember(value ?? false),
+                  title: Text(strings.rememberMe),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
                 ),
                 if (state.error != null) ...[
                   const SizedBox(height: 12),

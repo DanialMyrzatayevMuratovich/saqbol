@@ -26,6 +26,17 @@ class CallGuard {
     }
   }
 
+  /// Mirrors the interface language so the native call warning is shown in it.
+  static Future<void> syncLocale(String locale) async {
+    try {
+      await _channel.invokeMethod<bool>('syncLocale', {'locale': locale});
+    } on MissingPluginException {
+      // Not Android — nothing to sync.
+    } on PlatformException {
+      // The warning simply stays in the default language.
+    }
+  }
+
   /// True when this app currently holds the system call-screening role.
   static Future<bool> isEnabled() async {
     try {

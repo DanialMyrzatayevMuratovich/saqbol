@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../core/strings.dart';
 import 'sms_models.dart';
 
 class SmsController extends Notifier<AsyncValue<SmsCheckResult?>> {
@@ -24,12 +25,10 @@ class SmsController extends Notifier<AsyncValue<SmsCheckResult?>> {
     state = const AsyncData(null);
   }
 
+  /// Never shows the server's English text.
   String _messageFrom(DioException error) {
-    final data = error.response?.data;
-    if (data is Map && data['error'] is String) {
-      return data['error'] as String;
-    }
-    return 'Проверка не удалась. Попробуйте ещё раз.';
+    final strings = ref.read(stringsProvider);
+    return error.response?.statusCode == 429 ? strings.tooManyRequests : strings.checkFailed;
   }
 }
 

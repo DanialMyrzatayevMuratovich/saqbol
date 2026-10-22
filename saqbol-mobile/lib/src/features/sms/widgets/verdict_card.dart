@@ -33,7 +33,7 @@ class _VerdictCardState extends ConsumerState<VerdictCard> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Не удалось отправить отзыв')),
+          SnackBar(content: Text(ref.read(stringsProvider).feedbackFailed)),
         );
       }
     } finally {
@@ -44,8 +44,10 @@ class _VerdictCardState extends ConsumerState<VerdictCard> {
   @override
   Widget build(BuildContext context) {
     final result = widget.result;
+    final strings = ref.watch(stringsProvider);
     final style = VerdictStyle.of(result.verdict);
     final percent = (result.probability * 100).round();
+    final advice = strings.advice(result.category, result.advice);
 
     return Card(
       elevation: 0,
@@ -65,7 +67,7 @@ class _VerdictCardState extends ConsumerState<VerdictCard> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    style.label,
+                    strings.verdictLabel(result.verdict),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -86,7 +88,7 @@ class _VerdictCardState extends ConsumerState<VerdictCard> {
             if (result.category.isNotEmpty) ...[
               const SizedBox(height: 12),
               Chip(
-                label: Text(categoryLabel(result.category)),
+                label: Text(strings.categoryLabel(result.category)),
                 backgroundColor: style.color.withValues(alpha: 0.12),
                 side: BorderSide(color: style.color.withValues(alpha: 0.3)),
                 labelStyle: TextStyle(color: style.color, fontWeight: FontWeight.w600),
@@ -98,7 +100,7 @@ class _VerdictCardState extends ConsumerState<VerdictCard> {
               triggers: result.triggers,
               highlightColor: style.color,
             ),
-            if (result.advice.isNotEmpty) ...[
+            if (advice.isNotEmpty) ...[
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -111,7 +113,7 @@ class _VerdictCardState extends ConsumerState<VerdictCard> {
                   children: [
                     Icon(Icons.lightbulb_outline, color: style.color, size: 20),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(result.advice)),
+                    Expanded(child: Text(advice)),
                   ],
                 ),
               ),
@@ -121,7 +123,7 @@ class _VerdictCardState extends ConsumerState<VerdictCard> {
             if (result.modelVersion.isNotEmpty) ...[
               const SizedBox(height: 10),
               Text(
-                'Модель: ${result.modelVersion}',
+                strings.modelVersion(result.modelVersion),
                 style: TextStyle(fontSize: 11, color: AppColors.muted),
               ),
             ],

@@ -9,6 +9,8 @@ import '../features/reports/reports_repository.dart';
 import '../features/sms/sms_repository.dart';
 import 'app_config.dart';
 import 'auth_interceptor.dart';
+import 'credentials_storage.dart';
+import 'locale_storage.dart';
 import 'token_storage.dart';
 
 final appConfigProvider = Provider<AppConfig>((ref) {
@@ -17,6 +19,14 @@ final appConfigProvider = Provider<AppConfig>((ref) {
 
 final tokenStorageProvider = Provider<TokenStorage>((ref) {
   return TokenStorage(const FlutterSecureStorage());
+});
+
+final credentialsStorageProvider = Provider<CredentialsStorage>((ref) {
+  return CredentialsStorage(const FlutterSecureStorage());
+});
+
+final localeStorageProvider = Provider<LocaleStorage>((ref) {
+  return LocaleStorage(const FlutterSecureStorage());
 });
 
 final dioProvider = Provider<Dio>((ref) {

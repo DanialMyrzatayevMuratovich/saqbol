@@ -49,14 +49,14 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
               color: AppColors.scam,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.gpp_bad, color: AppColors.foreground),
-                SizedBox(width: 10),
+                const Icon(Icons.gpp_bad, color: AppColors.foreground),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Возможно мошенник! Не диктуйте коды и не переводите деньги.',
-                    style: TextStyle(color: AppColors.foreground, fontWeight: FontWeight.w600),
+                    strings.callScamWarning,
+                    style: const TextStyle(color: AppColors.foreground, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -86,7 +86,10 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
                         color: style.color,
                       ),
                     ),
-                    Text(style.label, style: TextStyle(color: style.color)),
+                    Text(
+                      strings.verdictLabel(state.verdict),
+                      style: TextStyle(color: style.color),
+                    ),
                   ],
                 ),
               ),
@@ -116,7 +119,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
         ],
         if (state.triggers.isNotEmpty) ...[
           const SizedBox(height: 20),
-          Text('Триггеры', style: Theme.of(context).textTheme.titleSmall),
+          Text(strings.triggers, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -131,7 +134,7 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
         ],
         if (state.transcript.isNotEmpty) ...[
           const SizedBox(height: 20),
-          Text('Транскрипт', style: Theme.of(context).textTheme.titleSmall),
+          Text(strings.transcript, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           Container(
             width: double.infinity,
@@ -150,9 +153,9 @@ class _VoiceScreenState extends ConsumerState<VoiceScreen> {
               Expanded(
                 child: TextField(
                   controller: _fragmentController,
-                  decoration: const InputDecoration(
-                    labelText: 'Фрагмент вручную (демо)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: strings.manualFragment,
+                    border: const OutlineInputBorder(),
                     isDense: true,
                   ),
                   onSubmitted: (_) => _sendFragment(),

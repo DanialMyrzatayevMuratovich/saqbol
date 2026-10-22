@@ -27,6 +27,16 @@ class MainActivity : FlutterActivity() {
                         result.success(true)
                     }
 
+                    // Same reason: the call warning is built natively and needs
+                    // to know which language the interface is in.
+                    "syncLocale" -> {
+                        getSharedPreferences(CallGuardService.PREFS, Context.MODE_PRIVATE)
+                            .edit()
+                            .putString(CallGuardService.KEY_LOCALE, call.argument<String>("locale"))
+                            .apply()
+                        result.success(true)
+                    }
+
                     "isCallScreeningEnabled" -> result.success(isCallScreeningRoleHeld())
 
                     "requestCallScreeningRole" -> result.success(requestCallScreeningRole())
