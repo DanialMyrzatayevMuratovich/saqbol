@@ -41,6 +41,7 @@ jobs:
           go-version: "1.25"
       - run: go build ./...
       - run: go vet ./...
+      - run: go test ./...
 
   ml:
     runs-on: ubuntu-latest
@@ -52,8 +53,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: bash scripts/gen_proto.sh
+      - run: python -m pytest -q
       - run: python training/evaluate.py
 
   mobile:
@@ -68,6 +70,7 @@ jobs:
           channel: stable
       - run: flutter pub get
       - run: flutter analyze
+      - run: flutter test
 
   web:
     runs-on: ubuntu-latest
@@ -81,4 +84,5 @@ jobs:
           node-version: "20"
       - run: npm ci
       - run: npm run lint
+      - run: npm test
       - run: npm run build
