@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 /// logo (sky blue, navy, amber). Widgets read them with `context.saq` and never
 /// hard-code a hex value, so both themes stay in sync.
 ///
-/// Text colours keep at least 4.5:1 contrast on `surface` and `background`.
-/// Verdict colours always come with an icon and a word, so colour is never the
-/// only signal (red/green colour blindness).
+/// Text colours keep at least 4.5:1 contrast on `surface` and `background`,
+/// and verdict colours also on their own tint (`VerdictStyle.tint`), checked
+/// in test/verdict_contrast_test.dart. Verdict colours always come with an
+/// icon and a word, so colour is never the only signal (red/green colour
+/// blindness).
 @immutable
 class SaqColors extends ThemeExtension<SaqColors> {
   const SaqColors({
@@ -62,7 +64,7 @@ class SaqColors extends ThemeExtension<SaqColors> {
     accent: Color(0xFF12679F),
     onAccent: Color(0xFFFFFFFF),
     amber: Color(0xFFF2A33A),
-    scam: Color(0xFFC9372A),
+    scam: Color(0xFFB42318),
     suspicious: Color(0xFF975500),
     safe: Color(0xFF09724F),
   );
