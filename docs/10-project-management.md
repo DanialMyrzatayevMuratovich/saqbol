@@ -69,7 +69,7 @@ YouTrack is the source of truth for the current state.
 | SAQ-13 | Review the pre-defense-1 pull requests | Asylbek | Critical | 2026-10-24 |
 | SAQ-14 | Supervisor review of pre-defense-1 deliverables | Danial | Critical | 2026-10-24 |
 | SAQ-16 | Tag the pre-defense-1 submission | Danial | Critical | 2026-10-24 |
-| SAQ-35 | Capture prototype screenshots (mobile and web) | Asylbek | Major | 2026-10-24 |
+| SAQ-35 | Capture prototype screenshots (mobile and web) | Danial | Major | 2026-10-24 |
 
 ### M2 — Real data and evaluation harness
 
@@ -86,6 +86,9 @@ YouTrack is the source of truth for the current state.
 | SAQ-31 | In-app consent screen for message processing | Asylbek | Major | 2026-11-30 |
 | SAQ-33 | Run unit tests in CI | Danial | Major | 2026-10-31 |
 | SAQ-34 | Backend API integration tests | Danial | Major | 2026-11-14 |
+| SAQ-36 | Bug: incoming-SMS check does not run in the Android release build | Danial | Major | 2026-11-07 |
+| SAQ-37 | Bug: call warning is lost because the lookup is cancelled | Danial | Major | 2026-11-07 |
+| SAQ-38 | Guard and history usability issues | Asylbek | Normal | 2026-11-21 |
 
 ### M3 — Pre-defense 2
 
