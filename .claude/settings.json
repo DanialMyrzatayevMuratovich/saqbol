@@ -50,7 +50,11 @@
       "Bash(minikube status *)",
       "Bash(chmod +x \"/Users/danialmyrzatayev/Desktop/SaqBol /k8s/deploy.sh\")",
       "Bash(go test *)",
-      "Bash(npm test *)"
+      "Bash(npm test *)",
+      "Bash(python3 scripts/pipeline.py *)",
+      "Bash(python3 scripts/mailbox.py inbox*)",
+      "Bash(python3 scripts/mailbox.py show *)",
+      "Bash(python3 scripts/mailbox.py whoami)"
     ],
     "additionalDirectories": [
       "/Users/danialmyrzatayev/Desktop/SaqBol /saqbol-backend",
@@ -97,6 +101,51 @@
       "/Users/danialmyrzatayev/Desktop/SaqBol /k8s/postgres",
       "/Users/danialmyrzatayev/Desktop/SaqBol /k3s",
       "/Users/danialmyrzatayev/Desktop/SaqBol /saqbol-mobile/android/app/src/main"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(gh pr merge*)"
     ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 20,
+            "command": "\"$(command -v python3 || command -v python)\" \"$CLAUDE_PROJECT_DIR/scripts/mailbox.py\" hook session"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 10,
+            "command": "\"$(command -v python3 || command -v python)\" \"$CLAUDE_PROJECT_DIR/scripts/mailbox.py\" hook prompt"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 15,
+            "command": "\"$(command -v python3 || command -v python)\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard.py\""
+          }
+        ]
+      }
+    ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
   }
 }
