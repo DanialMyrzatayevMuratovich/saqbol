@@ -35,7 +35,7 @@ fine-tuned XLM-RoBERTa on real data; a real-time call-analysis pipeline with mea
 
 ## Links
 
-- **YouTrack:** project `SAQ`, link to be added
+- **YouTrack:** [project SAQ](https://saqbol.youtrack.cloud/issues/SAQ) · [Kanban board](https://saqbol.youtrack.cloud/agiles/204-1/current)
 - **Documentation:** [docs/](docs/README.md): proposal, relevance evidence, literature review,
   system and technology comparisons, requirements, architecture, prototype, verification plan,
   project management, supervisor feedback

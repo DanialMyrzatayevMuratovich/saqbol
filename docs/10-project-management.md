@@ -16,7 +16,7 @@ deliverables and decisions at the checkpoints in §10.3; feedback is logged in
 | What | Where |
 |---|---|
 | Code, documents, diagrams | GitHub: https://github.com/DanialMyrzatayevMuratovich/saqbol |
-| Tasks | YouTrack project `SAQ` (link in the [README](../README.md)) |
+| Tasks | YouTrack project [`SAQ`](https://saqbol.youtrack.cloud/issues/SAQ), [Kanban board](https://saqbol.youtrack.cloud/agiles/204-1/current) |
 | CI | GitHub Actions (`.github/workflows/ci.yml`) |
 | Model training | Google Colab (`saqbol-ml/training/colab_train_xlmr.ipynb`) |
 
