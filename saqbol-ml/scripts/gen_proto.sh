@@ -3,6 +3,9 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+# app/generated/ is git-ignored, so a fresh clone (and CI) does not have it.
+mkdir -p app/generated
+
 python -m grpc_tools.protoc \
     -I proto/ml/v1 \
     --python_out=app/generated \

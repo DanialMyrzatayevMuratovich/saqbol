@@ -25,9 +25,8 @@ The project aim ([proposal](01-project-proposal.md#13-aim)) is reached when we c
 | Usability | Protocol in 9.7 | SUS questionnaire, observation notes | — | SAQ-30 |
 | Security | Secrets not in Git, JWT secrets required, rate limit, admin role, input limits | Code review, `gitleaks`, manual API checks | Partly | Before each pre-defense |
 
-At the reviewed `main` baseline `91862dc`, CI builds and lints the components but does not run
-their unit tests. PR #17 (SAQ-33) adds test execution and is a separate pending integration;
-do not present a pending branch's CI behavior as the current baseline's behavior.
+CI builds, lints and runs the unit tests of all four apps on every push and pull request since
+PR #17 (SAQ-33). Before it, at `main` `91862dc`, CI only built and linted the components.
 
 ## 9.3 Current baseline
 
