@@ -37,6 +37,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     HapticFeedback.selectionClick();
     if (tab == ShellTab.home || tab == ShellTab.history) {
       ref.invalidate(historyProvider);
+      ref.invalidate(historySummaryProvider);
     }
     ref.read(shellTabProvider.notifier).go(tab);
   }

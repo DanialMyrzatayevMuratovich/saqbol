@@ -5,24 +5,28 @@ import 'app_theme.dart';
 /// Colour and icon for a verdict in the current theme. The label that goes
 /// with them is language dependent and comes from `AppStrings.verdictLabel`.
 class VerdictStyle {
-  const VerdictStyle({required this.color, required this.icon});
+  const VerdictStyle({required this.color, required this.tint, required this.icon});
 
   final Color color;
-  final IconData icon;
 
-  /// A soft tint of the verdict colour for icon backgrounds and badges.
-  Color get tint => color.withValues(alpha: 0.14);
+  /// A soft tint of [color] for badges, icon backgrounds and the advice box.
+  /// It is opaque (14% of [color] over the card surface), so [color] text on
+  /// it keeps at least 4.5:1 whether it sits on a card or on the page.
+  final Color tint;
+  final IconData icon;
 
   static VerdictStyle of(BuildContext context, String verdict) {
     final c = context.saq;
-    switch (verdict) {
-      case 'scam':
-        return VerdictStyle(color: c.scam, icon: Icons.gpp_bad_rounded);
-      case 'suspicious':
-        return VerdictStyle(color: c.suspicious, icon: Icons.warning_amber_rounded);
-      default:
-        return VerdictStyle(color: c.safe, icon: Icons.verified_user_rounded);
-    }
+    final (color, icon) = switch (verdict) {
+      'scam' => (c.scam, Icons.gpp_bad_rounded),
+      'suspicious' => (c.suspicious, Icons.warning_amber_rounded),
+      _ => (c.safe, Icons.verified_user_rounded),
+    };
+    return VerdictStyle(
+      color: color,
+      tint: Color.alphaBlend(color.withValues(alpha: 0.14), c.surface),
+      icon: icon,
+    );
   }
 }
 

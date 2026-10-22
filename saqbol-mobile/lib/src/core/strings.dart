@@ -202,10 +202,12 @@ class AppStrings {
         'Алаяқтардан бір қадам алда болыңыз',
         'Stay one step ahead of scammers',
       );
+  // The call screen listens in Russian for the Russian and Kazakh interfaces
+  // and in English for the English one (VoiceController._startListening).
   String get onbBody1 => _t(
-        'SaqBol проверяет SMS и звонки на казахском и русском и объясняет, чем они опасны.',
-        'SaqBol қазақ және орыс тіліндегі SMS пен қоңырауларды тексеріп, неліктен қауіпті екенін түсіндіреді.',
-        'SaqBol checks SMS and calls in Kazakh and Russian and explains why they are dangerous.',
+        'SaqBol проверяет SMS на казахском и русском и объясняет, чем они опасны. Речь в звонке пока распознаётся только на русском: казахская речь ещё не поддерживается.',
+        'SaqBol қазақ және орыс тіліндегі SMS хабарламаларды тексеріп, неліктен қауіпті екенін түсіндіреді. Қоңыраудағы сөйлеу әзірге тек орыс тілінде танылады: қазақша сөйлеуді тану әлі жоқ.',
+        'SaqBol checks SMS in Kazakh and Russian and explains why they are dangerous. Call speech is recognised in Russian for now, or in English with the English interface. Kazakh speech recognition is not available yet.',
       );
   String get onbTitle2 => _t('Что умеет SaqBol', 'SaqBol не істей алады', 'What SaqBol does');
   String get onbFeature1Title => _t('Проверка SMS', 'SMS тексеру', 'SMS check');
@@ -228,9 +230,9 @@ class AppStrings {
       );
   String get onbTitle3 => _t('Ваши данные', 'Сіздің деректеріңіз', 'Your data');
   String get onbBody3 => _t(
-        'Чтобы проверить сообщение, SaqBol отправляет его текст на сервер SaqBol и сохраняет в вашей истории. Звонок SaqBol не записывает: речь в текст переводит система телефона, на сервер уходит только текст. SaqBol не передаёт ваши данные третьим лицам.',
-        'Хабарламаны тексеру үшін SaqBol оның мәтінін SaqBol серверіне жіберіп, тарихыңызда сақтайды. SaqBol қоңырауды жазбайды: сөзді мәтінге телефон жүйесі айналдырады, серверге тек мәтін жіберіледі. SaqBol деректеріңізді үшінші тұлғаларға бермейді.',
-        'To check a message, SaqBol sends its text to the SaqBol server and keeps it in your history. SaqBol does not record calls: the phone turns speech into text and only the text is sent. SaqBol does not share your data with third parties.',
+        'Чтобы проверить сообщение, SaqBol отправляет его текст на сервер SaqBol и сохраняет в вашей истории. Звонок SaqBol не записывает: речь в текст переводит система телефона, на сервер уходит и хранится там только текст. SaqBol не передаёт ваши данные третьим лицам.',
+        'Хабарламаны тексеру үшін SaqBol оның мәтінін SaqBol серверіне жіберіп, тарихыңызда сақтайды. SaqBol қоңырауды жазбайды: сөзді мәтінге телефон жүйесі айналдырады, серверге тек мәтін жіберіліп, сонда сақталады. SaqBol деректеріңізді үшінші тұлғаларға бермейді.',
+        'To check a message, SaqBol sends its text to the SaqBol server and keeps it in your history. SaqBol does not record calls: the phone turns speech into text, and only the text is sent to the server and stored there. SaqBol does not share your data with third parties.',
       );
   String get onbConsent => _t(
         'Я согласен(на) на отправку текста сообщений и расшифровки звонков на проверку',
@@ -332,10 +334,12 @@ class AppStrings {
         'Бұрын келген хабарламалардан қауіптісін табу',
         'Find dangerous messages among the ones you already have',
       );
+  // Calls are saved as call_sessions on the server; GET /history lists only
+  // checked messages.
   String get privacyBody => _t(
-        'Текст проверяемых сообщений и расшифровка разговора отправляются на сервер SaqBol и хранятся в вашей истории. Запись звонка SaqBol не делает: речь в текст переводит система телефона.',
-        'Тексерілетін хабарламалар мәтіні мен сөйлесудің мәтіндік нұсқасы SaqBol серверіне жіберіліп, тарихыңызда сақталады. SaqBol қоңырауды жазбайды: сөзді мәтінге телефон жүйесі айналдырады.',
-        'The text of checked messages and the call transcript are sent to the SaqBol server and kept in your history. SaqBol does not record calls: the phone itself turns speech into text.',
+        'Текст проверяемых сообщений отправляется на сервер SaqBol, хранится там и показывается в вашей истории. Расшифровка разговора тоже хранится на сервере, но в истории пока не показывается. Запись звонка SaqBol не делает: речь в текст переводит система телефона.',
+        'Тексерілетін хабарламалардың мәтіні SaqBol серверіне жіберіледі, сонда сақталады және тарихыңызда көрсетіледі. Қоңыраудың мәтіні де серверде сақталады, бірақ тарихта әзірге көрсетілмейді. SaqBol қоңырауды жазбайды: сөзді мәтінге телефон жүйесі айналдырады.',
+        'The text of checked messages is sent to the SaqBol server, stored there and shown in your history. Call transcripts are stored on the server too, but are not shown in the history yet. SaqBol does not record calls: the phone itself turns speech into text.',
       );
   String get androidOnly => _t('Только на Android', 'Тек Android-та', 'Android only');
   String get toggleTheme => _t('Сменить тему', 'Тақырыпты ауыстыру', 'Switch theme');
