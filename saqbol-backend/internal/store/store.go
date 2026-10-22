@@ -130,6 +130,8 @@ type CreateMessageParams struct {
 type CreateDetectionParams struct {
 	MessageID  string
 	CategoryID *int
+	// ModelVersionID is nil only when the classifier did not name its model.
+	ModelVersionID *string
 	Probability float64
 	Triggers   []string
 	LatencyMs  int

@@ -72,12 +72,22 @@ func (s *Service) Check(ctx context.Context, userID string, req CheckRequest) (C
 		return CheckResponse{}, err
 	}
 
+	var modelVersionID *string
+	if result.ModelVersion != "" {
+		id, err := s.store.ModelVersions.IDByName(ctx, result.ModelVersion)
+		if err != nil {
+			return CheckResponse{}, err
+		}
+		modelVersionID = &id
+	}
+
 	if _, err := s.store.Detections.Create(ctx, store.CreateDetectionParams{
-		MessageID:   messageID,
-		CategoryID:  categoryID,
-		Probability: result.Probability,
-		Triggers:    result.Triggers,
-		LatencyMs:   result.LatencyMs,
+		MessageID:      messageID,
+		CategoryID:     categoryID,
+		ModelVersionID: modelVersionID,
+		Probability:    result.Probability,
+		Triggers:       result.Triggers,
+		LatencyMs:      result.LatencyMs,
 	}); err != nil {
 		return CheckResponse{}, err
 	}
