@@ -3,6 +3,13 @@
 Screenshots of the key scenarios in [08-prototype.md](../08-prototype.md) (task SAQ-35).
 Use test accounts and sample messages only. No real phone numbers or personal SMS.
 
+For every capture, record its source commit, device/emulator and whether input was typed or
+recognised from speech. A Kazakh text verdict or a manually injected call fragment is not proof
+of Kazakh speech recognition. A model screenshot labelled `real-only` refers to the legacy
+source-selected course/seed cohort unless an authenticated received-SMS dataset is explicitly
+documented; caption or recapture that label before using it as evaluation evidence. See the
+[implementation/evidence record](../implementation-evidence.md).
+
 | File | Scenario |
 |---|---|
 | `mobile-01-login.png` | S1 Login, language switch |
