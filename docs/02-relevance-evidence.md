@@ -1,9 +1,9 @@
 # 2. Evidence of Relevance
 
-This page collects what we know about the problem and how we know it. It has three kinds of
-evidence: published statistics (secondary data), our own analysis of available data, and
-interviews with potential users (primary data). The last section separates **verified findings**
-from **assumptions** that still need checking.
+This page collects published statistics (secondary data), analysis of available data, and a
+protocol for interviews with potential users. No completed interview records or actual-client
+agreement are documented here. The last section separates **verified findings** from
+**assumptions** that still need checking.
 
 ## 2.1 Published statistics for Kazakhstan
 
@@ -48,19 +48,27 @@ sources count differently, so the figures are not added up or compared directly.
 
 | Data | What we found |
 |---|---|
-| Public Kazakh spam dataset (GitHub `Yerassyl04/Spam-kazakh`) | 184 real Kazakh messages. It is small, and it is spam-oriented rather than fraud-oriented |
+| Public Kazakh spam dataset (GitHub `Yerassyl04/Spam-kazakh`) | 184 unique Kazakh examples from a student course project, not confirmed received SMS. The source is spam-oriented; imported labels do not establish authentic fraud incidents |
 | Published Kazakh spam corpus (Kumisbek & Shormakova, 2026; Zenodo) | 5,466 messages, but translated from the English SMS Spam Collection (advertising spam), so it does not show local fraud schemes |
-| Our training corpus (`saqbol-ml/data/train.csv`, 2026-10-10) | 4,457 rows, but only **228 real** messages, of which 47 are scams. The rest are templates (2,020) and English translations (2,209) |
-| Baseline model on real vs synthetic data | Recall (scam) is 0.97 on the full corpus but **0.47–0.51** on real messages only (see [verification plan](09-verification-plan.md#93-current-baseline)) |
+| Tracked training corpus at `91862dc` (`saqbol-ml/data/train.csv`) | 2,248 rows: 2,020 template-generated examples plus **228 course/seed examples** (184 course-project examples and 44 team-written Russian seeds). Of those 228, 47 are labelled scam; none has established provenance as a received SMS |
+| Expanded corpus reported in PR #25 at `37305a2` | 4,457 rows: the same 2,248 originals plus 2,209 deduplicated English translations. This branch data is not the 2,248-row main checkout above |
+| Author-reported exploratory baseline on PR #25's expanded corpus | Revised grouped-CV recall is about **0.96** on all rows; protocols B and C3 report **0.47–0.51** on the 228 non-template examples. These are different protocols, not an accuracy interval or a measurement on authentic SMS traffic. See the versioned table and limitations in the [verification plan](09-verification-plan.md#93-current-baseline) |
 
-Conclusion: the lack of real Kazakh/Russian fraud data is not an assumption. We measured it, and
-it directly limits detection quality. Collecting real messages (task SAQ-19) is therefore part
-of the project, not a side activity.
+The provenance account is documented in the [PR #25 dataset-card revision](https://github.com/DanialMyrzatayevMuratovich/saqbol/blob/37305a21be70045ef60fb8e6d8077b6aea99690b/docs/12-dataset-card.md#124-what-real-means-in-the-scripts).
+The source-filter name `real` in experiment code selects examples outside sources prefixed
+`synthetic`; it verifies neither human authorship nor receipt as an SMS. The 184 course examples'
+creation method is not independently established. The reported scores identify a limitation of the current
+diagnostic data, not real-world recall. They were not rerun for this documentation correction.
+
+The team has not established an authentic received-SMS evaluation corpus. This does not prove
+that no such resource exists: the literature includes a 189-message multilingual pilot. Collecting
+and documenting authentic messages (SAQ-19) remains necessary for the proposed evaluation.
 
 ## 2.3 Interviews with potential users
 
-**Status:** the guide is ready; interviews are being conducted (task SAQ-3, Asylbek Abdibay).
-Results go in the table in §2.3.4.
+**Status:** protocol prepared; completed discussions and their findings are **pending evidence**
+(task SAQ-3, Asylbek Abdibay). The blank table in §2.3.4 is a template, not proof of interviews.
+No substantive actual-client agreement is documented as an alternative.
 
 ### 2.3.1 Who we interview (3–5 people, at least one from each of the first three groups)
 
@@ -115,15 +123,15 @@ and say that no names or phone numbers will be published.
 | F1 | Internet and phone fraud is a large and growing problem in Kazakhstan | ✅ verified | S1, S2 |
 | F2 | Calls and messages in the name of banks are the most common scheme | ✅ verified | S3, S4, S7, S9 |
 | F3 | Pensioners and young people are the main risk groups | ✅ verified | S5, S6 |
-| F4 | No consumer product available in Kazakhstan analyses Kazakh or Russian message content | ✅ verified (documentation review) | [Existing systems](04-existing-systems-comparison.md); hands-on test planned (SAQ-15) |
-| F5 | There is no public corpus of authentic Kazakh/Russian fraud messages; the existing Kazakh spam corpus is translated from English | ✅ verified (literature and data search) | §2.2, [Literature review](03-literature-review.md#35-gaps-the-project-addresses) |
-| F6 | A model trained on synthetic templates performs much worse on real messages | ✅ verified (our experiment) | §2.2, [verification plan](09-verification-plan.md#93-current-baseline) |
+| F4 | Reviewed product documentation leaves gaps in evidence about local Kazakh/Russian content-detection coverage | Provisional comparison finding; absence of capability is not verified from UI language or a store listing alone | [Existing systems](04-existing-systems-comparison.md); provider evidence and hands-on checks still needed (SAQ-15) |
+| F5 | The team's 228 non-template examples are 184 course-project examples and 44 written seeds, not confirmed received SMS | Documented provenance limitation; an authentic evaluation corpus is still needed | §2.2 and the pinned PR #25 dataset card; this is not a claim that no public authentic corpus exists |
+| F6 | The reported expanded-corpus experiments score lower on the 228 non-template examples than on the template-heavy full corpus | Author-reported exploratory result; no real-world performance claim | §2.2, [versioned evaluation table](09-verification-plan.md#93-current-baseline); not rerun for this correction |
 | A1 | Users will paste a suspicious SMS into an app to check it | ❓ assumption | Interviews (Q6), usability test (SAQ-30) |
 | A2 | Users will grant SMS-reading permission for automatic checks | ❓ assumption | Interviews (Q7) |
 | A3 | Users will put a suspicious call on speakerphone so the app can listen | ❓ assumption, high risk | Interviews (Q8), usability test |
 | A4 | An explanation (trigger phrases + advice) changes what the user does, compared with a bare "scam" label | ❓ assumption | Usability test: compare reactions to the verdict card with and without explanation |
 | A5 | Relatives would install SaqBol for elderly family members | ❓ assumption | Interviews (Q10, P2) |
-| A6 | On-device speech recognition is accurate enough in Kazakh for classification | ❓ assumption, high risk | WER test on target phones (SAQ-23) |
+| A6 | A supported Kazakh recogniser is available on target phones and is accurate enough for classification | Unverified; unavailable where no supported Kazakh locale exists | Enumerate locales and verify recogniser/provider availability first; record explicit failure or a labelled fallback if absent. Only then measure Kazakh WER and end-to-end detection (SAQ-23); prepared transcripts do not verify ASR |
 | A7 | Advice should be in the same language as the message | ❓ assumption | Interviews (Q9) |
 
 Requirements that depend on an unverified assumption will be revisited after the interviews.
