@@ -1,0 +1,31 @@
+@startuml system-context
+' SaqBol — System Context diagram (C4 level 1)
+' Render: java -jar plantuml.jar -tsvg diagrams/src/*.puml -o ../export
+!pragma layout smetana
+!include <C4/C4_Context>
+
+LAYOUT_TOP_DOWN()
+title SaqBol — System Context
+
+Person(user, "Mobile user", "Resident of Kazakhstan who receives SMS and calls in Kazakh / Russian; protects self or an elderly relative")
+Person(admin, "Administrator / analyst", "Monitors detection quality, reviews flagged messages, registers model versions")
+Person_Ext(fraudster, "Fraudster", "Sends scam SMS and makes social-engineering calls (fake bank, fake police, Kaspi, prizes, phishing links)")
+
+System(saqbol, "SaqBol", "Detects fraudulent SMS and calls in Kazakh and Russian, explains the verdict (trigger phrases + advice), keeps number reputation")
+
+System_Ext(telecom, "Mobile network and phone OS", "Delivers SMS and calls; Android exposes SMS inbox and call-screening APIs, iOS does not")
+System_Ext(stt, "On-device speech recognition", "Android / iOS speech service used by the app to transcribe a speakerphone call (KZ / RU)")
+System_Ext(training, "Model training environment", "Google Colab (GPU) for XLM-RoBERTa fine-tuning; local scikit-learn for the baseline")
+System_Ext(b2b, "Bank / mobile operator (future)", "Possible B2B integration through the public API — out of scope for this diploma")
+
+Rel(fraudster, telecom, "Sends scam SMS / places calls")
+Rel(telecom, user, "Delivers SMS and calls")
+Rel(user, saqbol, "Checks SMS, enables guard, runs live call analysis, reports false alarms", "Mobile app, HTTPS / WSS")
+Rel(admin, saqbol, "Views metrics, flagged messages, model versions", "Web dashboard, HTTPS")
+Rel(saqbol, telecom, "Reads incoming SMS, screens incoming calls (Android, with permission)")
+Rel(saqbol, stt, "Streams microphone audio, receives transcript text")
+Rel(training, saqbol, "Provides trained model artifacts")
+Rel_U(b2b, saqbol, "Checks texts / numbers", "REST API")
+
+SHOW_LEGEND()
+@enduml

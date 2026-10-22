@@ -1,0 +1,28 @@
+@startuml sequence-live-call
+' SaqBol — live call analysis over WebSocket
+title SaqBol — Live call analysis (UC-7)
+autonumber
+
+actor "Mobile user" as U
+participant "Flutter app\n(speech_to_text)" as App
+participant "Go backend\n/ws/call" as WS
+participant "ML service\n(gRPC Classify)" as ML
+database "PostgreSQL" as DB
+
+U -> App : start analysis, put call on speakerphone
+App -> WS : open WebSocket (?token=JWT)
+loop while the call lasts
+  App -> App : on-device STT (KZ / RU)\nproduces transcript fragment
+  App -> WS : {"text": fragment}
+  WS -> WS : append to transcript,\ntake last 600 characters (sliding window)
+  WS -> ML : Classify(window, channel="call")
+  ML --> WS : probability, category, triggers
+  WS --> App : {verdict, probability, category,\ntriggers, advice, alert}
+  alt probability >= SCAM_THRESHOLD (0.8)
+    App --> U : red alert: "Likely fraud — do not share codes,\nhang up and call the bank yourself"
+  end
+end
+U -> App : stop
+App -> WS : close
+WS -> DB : save call_session\n(transcript, max probability, alert flag)
+@enduml

@@ -1,0 +1,94 @@
+@startuml component
+' SaqBol — Component diagram (draft)
+' Reflects the code in saqbol-mobile, saqbol-web, saqbol-backend, saqbol-ml.
+' Grey = planned, not implemented yet.
+!pragma layout smetana
+skinparam componentStyle uml2
+skinparam shadowing false
+skinparam nodesep 40
+skinparam ranksep 60
+
+title SaqBol — Components (draft)
+
+package "saqbol-mobile (Flutter, Android / iOS)" {
+  [SMS check screen\n+ highlighted triggers] as MSms
+  [Guard: inbox scan,\nincoming SMS] as MGuard
+  [History + feedback] as MHist
+  [Auth, locale KZ / RU] as MAuth
+  [Voice screen\n(speech_to_text, on-device)] as MVoice
+  [CallGuardService\n(Android call screening)] as MCallSvc
+  [API client\n(Dio + JWT interceptor)] as MApi
+  [Call socket\n(WebSocket client)] as MSock
+}
+
+package "saqbol-web (Next.js)" {
+  [Dashboard, flagged messages,\nmodel versions pages] as WPages
+  [API client (lib/api.ts)] as WApi
+}
+
+package "saqbol-backend (Go, Gin)" {
+  [HTTP router + middleware\nJWT, admin role, rate limit,\nPrometheus /metrics] as BRouter
+  [auth] as BAuth
+  [sms] as BSms
+  [calls\n(sliding window, alert)] as BCalls
+  [numbers\n(reputation)] as BNum
+  [reports\n(feedback)] as BRep
+  [history] as BHist
+  [admin] as BAdmin
+  [ml client (gRPC)] as BMl
+  [store\n(pgx + migrations)] as BStore
+}
+
+package "saqbol-ml (Python)" {
+  [gRPC server :9090\nScamClassifier.Classify] as MGrpc
+  [FastAPI :8000\n/health, /model, /classify (debug)] as MRest
+  [Classification pipeline\n(thresholds, verdict)] as MPipe
+  [Baseline model\nTF-IDF + LogReg,\ntop-feature explanation] as MBase
+  [Rule engine\n(category, triggers, advice)] as MRules
+  [XLM-RoBERTa\n(planned)] as MXlmr #EEEEEE
+}
+
+database "PostgreSQL" as PG
+database "Redis\n(rate-limit counters)" as Redis
+
+MSms --> MApi
+MGuard --> MApi
+MHist --> MApi
+MAuth --> MApi
+MGuard --> MCallSvc : MethodChannel\n(sync token, locale)
+MVoice --> MSock
+MApi --> BRouter : HTTPS REST /api/v1
+MCallSvc --> BRouter : HTTPS GET\n/numbers/{n}/risk
+MSock --> BRouter : WSS /ws/call\n(transcript frames)
+
+WPages --> WApi
+WApi --> BRouter : HTTPS REST /api/v1/admin/*
+
+BRouter --> BAuth
+BRouter --> BSms
+BRouter --> BCalls
+BRouter --> BNum
+BRouter --> BRep
+BRouter --> BHist
+BRouter --> BAdmin
+BRouter --> Redis
+
+BSms --> BMl
+BCalls --> BMl
+BMl --> MGrpc : gRPC
+
+BAuth --> BStore
+BSms --> BStore
+BCalls --> BStore
+BNum --> BStore
+BRep --> BStore
+BHist --> BStore
+BAdmin --> BStore
+BStore --> PG : SQL
+
+MGrpc --> MPipe
+MRest --> MPipe
+MPipe --> MBase
+MPipe --> MRules
+MPipe ..> MXlmr : future
+@enduml

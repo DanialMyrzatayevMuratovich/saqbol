@@ -1,0 +1,61 @@
+@startuml use-case
+' SaqBol — Use Case diagram
+' Use cases marked <<planned>> are in the requirements but not implemented yet.
+!pragma layout smetana
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor<<planned>> #F2F2F2
+  BorderColor<<planned>> #999999
+  FontColor<<planned>> #666666
+}
+
+title SaqBol — Use Cases
+
+actor "Mobile user" as User
+actor "Administrator /\nanalyst" as Admin
+actor "Android OS" as OS <<system>>
+
+rectangle "SaqBol" {
+  usecase "UC-1 Register / log in" as UC1
+  usecase "UC-2 Check an SMS text manually" as UC2
+  usecase "UC-3 Show verdict, category,\ntrigger phrases and advice" as UC3
+  usecase "UC-4 Check sender number reputation" as UC4
+  usecase "UC-5 Scan SMS inbox and\nincoming SMS automatically" as UC5
+  usecase "UC-6 Warn about an incoming call\nfrom a high-risk number" as UC6
+  usecase "UC-7 Analyse a live call\n(speakerphone + speech-to-text)" as UC7
+  usecase "UC-8 Analyse a call transcript\n(offline)" as UC8
+  usecase "UC-9 Report feedback\n(confirmed scam / false alarm)" as UC9
+  usecase "UC-10 View check history" as UC10
+  usecase "UC-11 Switch interface language\n(Kazakh / Russian)" as UC11
+  usecase "UC-12 View detection metrics" as UC12
+  usecase "UC-13 Review flagged messages" as UC13
+  usecase "UC-14 Register model version\nwith its metrics" as UC14
+  usecase "UC-15 Push notifications" as UC15 <<planned>>
+  usecase "UC-16 iOS SMS filter extension" as UC16 <<planned>>
+}
+
+User --> UC1
+User --> UC2
+User --> UC5
+User --> UC7
+User --> UC8
+User --> UC9
+User --> UC10
+User --> UC11
+User --> UC15
+User --> UC16
+
+UC2 ..> UC3 : <<include>>
+UC5 ..> UC3 : <<include>>
+UC7 ..> UC3 : <<include>>
+UC8 ..> UC3 : <<include>>
+OS --> UC5 : SMS received
+OS --> UC6 : call incoming
+UC6 ..> UC4 : <<include>>
+
+Admin --> UC1
+Admin --> UC12
+Admin --> UC13
+Admin --> UC14
+@enduml
