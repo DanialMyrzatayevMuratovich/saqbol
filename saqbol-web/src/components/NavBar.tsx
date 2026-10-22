@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -24,10 +25,7 @@ export function NavBar({ active }: { active: string }) {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <div className="flex items-center gap-8">
           <span className="flex items-center gap-2 text-lg font-bold tracking-tight">
-            <span
-              aria-hidden
-              className="inline-block h-2 w-2 rounded-full bg-accent shadow-[0_0_12px_var(--accent)]"
-            />
+            <Image src="/saqbol-icon.svg" alt="" width={28} height={28} priority />
             SaqBol
           </span>
           <nav className="flex gap-1">
