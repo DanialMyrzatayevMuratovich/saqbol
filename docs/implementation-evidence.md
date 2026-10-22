@@ -69,7 +69,7 @@ training partition.
 
 | Deliverable | Actual status | What completes it |
 |---|---|---|
-| User relevance evidence | No completed interviews or substantive client agreement supplied | Conduct 3–5 discussions using the [guide](02-relevance-evidence.md#23-interviews-with-potential-users), record anonymised findings and resulting requirement decisions, or document a substantive actual-client agreement |
+| User relevance evidence | Two informal conversations recorded (§2.3.4, I1 and I2); no structured interviews or substantive client agreement yet | Conduct 3–5 discussions using the [guide](02-relevance-evidence.md#23-interviews-with-potential-users), record anonymised findings and resulting requirement decisions, or document a substantive actual-client agreement |
 | Supervisor feedback | No substantive feedback supplied | Obtain the supervisor's review of key deliverables and record comments, decisions and resulting changes in the [log](11-supervisor-feedback.md) |
 | Physical Android checks | Asylbek confirmed no suitable phone is available | Arrange a borrowed device and separate caller/SMS sender; execute SAQ-45/46 and the device screenshot task SAQ-65 with test data |
 | Kazakh speech quality | No supported-locale/device test supplied | Establish a genuine Kazakh recognition path, then record WER and call detection conditions/results |
