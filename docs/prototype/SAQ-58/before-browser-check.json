@@ -1,0 +1,55 @@
+{
+  "phase": "before",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "data": "invented browser-intercepted API fixtures; no backend or real authentication",
+  "contrast": [
+    {
+      "control": "login",
+      "state": "normal",
+      "foreground": "rgb(11, 17, 32)",
+      "background": "rgb(34, 211, 238)",
+      "opacity": "1",
+      "ratio": 10.419
+    },
+    {
+      "control": "login",
+      "state": "hover",
+      "foreground": "rgb(11, 17, 32)",
+      "background": "rgb(6, 182, 212)",
+      "opacity": "1",
+      "ratio": 7.756
+    },
+    {
+      "control": "add model version",
+      "state": "normal",
+      "foreground": "rgb(11, 17, 32)",
+      "background": "rgb(34, 211, 238)",
+      "opacity": "1",
+      "ratio": 10.419
+    },
+    {
+      "control": "add model version",
+      "state": "hover",
+      "foreground": "rgb(11, 17, 32)",
+      "background": "rgb(6, 182, 212)",
+      "opacity": "1",
+      "ratio": 7.756
+    },
+    {
+      "control": "selected message filter",
+      "state": "normal",
+      "foreground": "rgb(11, 17, 32)",
+      "background": "rgb(34, 211, 238)",
+      "opacity": "1",
+      "ratio": 10.419
+    }
+  ],
+  "page_errors": [],
+  "blocked_requests": [],
+  "browser_version": "146.0.7680.165",
+  "passed": true,
+  "owned_server_stopped": true
+}

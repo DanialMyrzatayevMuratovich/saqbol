@@ -18,8 +18,8 @@
   --foreground: #e8edf7;
   --muted: #94a3c4;
 
-  --accent: #22d3ee;
-  --accent-strong: #06b6d4;
+  --accent: #2ba8e0;
+  --accent-strong: #208fc8;
 
   --verdict-scam: #f43f5e;
   --verdict-suspicious: #ad7a00;
@@ -56,7 +56,7 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(60rem 40rem at 15% -10%, rgb(34 211 238 / 0.08), transparent 60%),
+    radial-gradient(60rem 40rem at 15% -10%, rgb(43 168 224 / 0.08), transparent 60%),
     radial-gradient(50rem 35rem at 100% 0%, rgb(99 102 241 / 0.07), transparent 55%);
 }
 
