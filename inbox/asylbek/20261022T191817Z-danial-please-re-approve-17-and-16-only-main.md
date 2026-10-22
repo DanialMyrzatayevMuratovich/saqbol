@@ -5,9 +5,9 @@ to: asylbek
 type: task
 task: SAQ-41
 in_reply_to:
-status: open
+status: done
 created: 2026-10-22T19:18:17Z
-closed:
+closed: 2026-10-22T19:23:22Z
 subject: Please re-approve #17 and #16: only main merged in, conflicts resolved
 ---
 
