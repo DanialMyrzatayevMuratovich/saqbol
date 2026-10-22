@@ -16,7 +16,9 @@ const (
 )
 
 type CreateRequest struct {
-	MessageID string `json:"message_id" binding:"required"`
+	// Checked as a UUID here: a malformed id would otherwise fail inside
+	// PostgreSQL and come back as a 500.
+	MessageID string `json:"message_id" binding:"required,uuid"`
 	Feedback  string `json:"feedback" binding:"required,oneof=confirmed false_positive"`
 }
 
