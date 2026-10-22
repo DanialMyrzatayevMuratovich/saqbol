@@ -1,4 +1,10 @@
-# SAQ-86 companion corrections for pending documents
+# Review evidence and companion corrections
+
+- [First review round, 22 October](2026-10-22-pre-defense-review.md)
+- [Second review round, 23 October](2026-10-23-round-two-review.md)
+- [Reproducible second-round diagnostics](round2/README.md)
+
+## SAQ-86 companion corrections for pending documents
 
 The main SAQ-86 change corrects the documentation and diagrams already present in `main`.
 Two related files belong to unmerged PRs, so their corrections are supplied as exact patches
