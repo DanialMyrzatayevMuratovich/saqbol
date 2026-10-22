@@ -353,4 +353,19 @@ func TestUnknownModelVersionIsRegisteredOnFirstUse(t *testing.T) {
 	if versions != 1 || linked != 2 {
 		t.Fatalf("expected one registered version used by both detections, got %d versions and %d linked detections", versions, linked)
 	}
+
+func TestRateLimitIsPerUserOnProtectedRoutes(t *testing.T) {
+	a := newAPI(t, 3)
+	// Registering takes two of the three per-IP auth requests; logged-in calls
+	// below are counted per user instead.
+	first, _ := a.register("+77000000231")
+	second, _ := a.register("+77000000232")
+
+	for i := 0; i < 3; i++ {
+		a.expect(a.call("GET", "/api/v1/history", first, nil), http.StatusOK)
+	}
+	a.expect(a.call("GET", "/api/v1/history", first, nil), http.StatusTooManyRequests)
+
+	// Same IP, different user: still has its own budget.
+	a.expect(a.call("GET", "/api/v1/history", second, nil), http.StatusOK)
 }

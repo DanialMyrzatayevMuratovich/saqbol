@@ -38,11 +38,16 @@ func New(pool *pgxpool.Pool, redisClient *redis.Client, tokens *auth.TokenManage
 	rateLimit := middleware.RateLimit(redisClient, rateLimitPerMin)
 
 	api := engine.Group("/api/v1")
-	api.Use(rateLimit)
-	handlers.Auth.Register(api)
 
+	// Login, register and refresh have no user yet, so they are limited per IP.
+	public := api.Group("")
+	public.Use(rateLimit)
+	handlers.Auth.Register(public)
+
+	// The limiter runs after Auth here, so it counts per user: people behind one
+	// NAT (a mobile operator, a campus Wi-Fi) do not share a single budget.
 	protected := api.Group("")
-	protected.Use(middleware.Auth(tokens))
+	protected.Use(middleware.Auth(tokens), rateLimit)
 	handlers.SMS.Register(protected)
 	handlers.Numbers.Register(protected)
 	handlers.Reports.Register(protected)
