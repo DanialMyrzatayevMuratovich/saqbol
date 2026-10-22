@@ -7,7 +7,7 @@
 | **Team** | Danial Myrzatayev (SE-2412), Asylbek Abdibay (SE-2427) |
 | **Supervisor** | Zhibek Nurzhanovna Sarsenova |
 | **Repository** | https://github.com/DanialMyrzatayevMuratovich/saqbol |
-| **Task tracker** | YouTrack project `SAQ` (link in the [README](../README.md)) |
+| **Task tracker** | YouTrack project [`SAQ`](https://saqbol.youtrack.cloud/issues/SAQ) |
 
 ## 1.1 Problem statement
 
