@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -32,6 +33,7 @@ export default function LoginPage() {
         onSubmit={onSubmit}
         className="w-full max-w-sm rounded-2xl border border-border bg-surface p-8 "
       >
+        <Image src="/saqbol-icon.svg" alt="" width={64} height={64} priority className="mx-auto mb-3" />
         <h1 className="text-center text-2xl font-bold text-foreground">SaqBol</h1>
         <p className="mt-1 text-center text-sm text-muted">Панель аналитики</p>
 
