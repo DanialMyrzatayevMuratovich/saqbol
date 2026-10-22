@@ -84,10 +84,12 @@ class HistoryTile extends ConsumerWidget {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
+      // Stays below the status bar; a long message scrolls inside the sheet.
+      useSafeArea: true,
       builder: (context) {
         final text = Theme.of(context).textTheme;
         return SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(Gap.xl, 0, Gap.xl, Gap.xl),
             child: Column(
               mainAxisSize: MainAxisSize.min,
