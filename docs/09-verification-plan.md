@@ -34,8 +34,10 @@ The baseline solution for comparison is the deployed model `baseline-tfidf-logre
 engine. Measured on 2026-10-22 on `saqbol-ml/data/train.csv` (binary task: scam vs the rest).
 
 **Data:** 4,457 rows. 2,020 are Kazakh templates, 2,209 are English machine translations, and only
-**228 are real messages** (184 from the public `Yerassyl04/Spam-kazakh` dataset, 44 hand-collected
-seed messages). Of the real messages, 47 are scams.
+**228 do not come from our templates** — the scripts call them "real": 184 short Kazakh sentences
+from the public `Yerassyl04/Spam-kazakh` repository and 44 seed messages written by the team.
+None of them is a confirmed received SMS ([dataset card §12.4](12-dataset-card.md#124-what-real-means-in-the-scripts)),
+so "real rows" below means human-written, non-template text. Of these rows, 47 are scams.
 
 | Protocol | n | Precision | Recall (scam) | F1 | FPR | ROC-AUC |
 |---|---|---|---|---|---|---|
@@ -49,7 +51,7 @@ The confidence intervals are 95% bootstrap intervals over the 47 real scams.
 
 **Reading the table**
 
-- The template-heavy corpus makes the task look solved (A). On real messages recall drops by about half
+- The template-heavy corpus makes the task look solved (A). On non-template messages recall drops by about half
   (B, C1). This is the same effect reported by Radolda et al. (2026) and Shen et al. (2025)
   ([literature review](03-literature-review.md)).
 - At the deployed threshold the model alone almost never says "scam" on real data (C2). The rule
