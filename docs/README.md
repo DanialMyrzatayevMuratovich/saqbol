@@ -17,6 +17,9 @@
 
 Diagram sources: [`diagrams/src/`](../diagrams/src) · exports: [`diagrams/export/`](../diagrams/export)
 
+Review evidence: [22 October 2026 pre-defense review](reviews/2026-10-22-pre-defense-review.md)
+(published PR reviews, actual checks, and unresolved submission dependencies; SAQ-13).
+
 `SaqBol_TZ.md` in the repository root is the original specification draft (in Russian, July 2026).
 Where it differs from these documents (for example NestJS vs Go), these documents describe the
 current state.
