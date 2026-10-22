@@ -32,3 +32,30 @@ class HistoryItem {
     );
   }
 }
+
+/// The user's totals for a period, counted by the server over every check,
+/// and their newest scam or suspicious messages.
+class HistorySummary {
+  const HistorySummary({
+    required this.checked,
+    required this.scam,
+    required this.suspicious,
+    required this.threats,
+  });
+
+  final int checked;
+  final int scam;
+  final int suspicious;
+  final List<HistoryItem> threats;
+
+  factory HistorySummary.fromJson(Map<String, dynamic> json) {
+    return HistorySummary(
+      checked: (json['checked'] as num?)?.toInt() ?? 0,
+      scam: (json['scam'] as num?)?.toInt() ?? 0,
+      suspicious: (json['suspicious'] as num?)?.toInt() ?? 0,
+      threats: (json['threats'] as List<dynamic>? ?? [])
+          .map((item) => HistoryItem.fromJson(item as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}

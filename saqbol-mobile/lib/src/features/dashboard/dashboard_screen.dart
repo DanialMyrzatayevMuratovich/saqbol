@@ -11,7 +11,8 @@ import '../history/history_tile.dart';
 import '../home/shell_tab.dart';
 
 /// Home: is protection on, what happened this week, and the shortest way to
-/// check a message. Every number here comes from the user's real history.
+/// check a message. Every number here is counted by the server over the
+/// user's whole history, not over the last page of it.
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
@@ -19,11 +20,11 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final strings = ref.watch(stringsProvider);
     final guard = ref.watch(guardControllerProvider);
-    final history = ref.watch(historyProvider);
+    final summary = ref.watch(historySummaryProvider);
     final text = Theme.of(context).textTheme;
 
     return RefreshIndicator(
-      onRefresh: () => ref.refresh(historyProvider.future),
+      onRefresh: () => ref.refresh(historySummaryProvider.future),
       child: ListView(
         padding: const EdgeInsets.fromLTRB(Gap.l, Gap.s, Gap.l, Gap.xl),
         children: [
@@ -36,8 +37,8 @@ class DashboardScreen extends ConsumerWidget {
           const SizedBox(height: Gap.l),
           Text(strings.statsTitle, style: text.titleSmall?.copyWith(color: context.saq.muted)),
           const SizedBox(height: Gap.s),
-          history.when(
-            data: (items) => _StatsRow(stats: weeklyStats(items, DateTime.now()), strings: strings),
+          summary.when(
+            data: (summary) => _StatsRow(stats: summary, strings: strings),
             loading: () => const _StatsRow(stats: null, strings: null),
             error: (_, _) => const _StatsRow(stats: null, strings: null),
           ),
@@ -54,8 +55,8 @@ class DashboardScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: Gap.s),
-          ...history.when(
-            data: (items) => _threats(context, recentThreats(items), strings),
+          ...summary.when(
+            data: (summary) => _threats(context, summary.threats, strings),
             loading: () => const [Center(child: Padding(padding: EdgeInsets.all(Gap.xl), child: CircularProgressIndicator()))],
             error: (_, _) => [Text(strings.historyLoadFailed, style: text.bodyMedium?.copyWith(color: context.saq.muted))],
           ),
@@ -142,7 +143,7 @@ class _StatusHero extends StatelessWidget {
 class _StatsRow extends StatelessWidget {
   const _StatsRow({required this.stats, required this.strings});
 
-  final WeeklyStats? stats;
+  final HistorySummary? stats;
   final AppStrings? strings;
 
   @override

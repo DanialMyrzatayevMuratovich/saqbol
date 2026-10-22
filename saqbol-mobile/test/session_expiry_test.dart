@@ -72,6 +72,10 @@ class _NoHistory extends HistoryRepository {
 
   @override
   Future<List<HistoryItem>> list({String? channel, int limit = 50}) async => const [];
+
+  @override
+  Future<HistorySummary> summary({int days = 7}) async =>
+      const HistorySummary(checked: 0, scam: 0, suspicious: 0, threats: []);
 }
 
 SmsCheckResult _scam(String text) => SmsCheckResult(

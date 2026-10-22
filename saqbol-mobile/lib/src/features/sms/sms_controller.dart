@@ -28,6 +28,7 @@ class SmsController extends Notifier<AsyncValue<SmsCheckResult?>> {
       // The server has saved the check either way, so History refreshes even
       // when the verdict itself is no longer wanted on screen.
       ref.invalidate(historyProvider);
+      ref.invalidate(historySummaryProvider);
       if (request != _current) return;
       state = AsyncData(result);
     } on DioException catch (error, stackTrace) {

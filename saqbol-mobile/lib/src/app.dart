@@ -54,6 +54,7 @@ class _Gate extends ConsumerWidget {
       // Home is still on screen, and keep that error.
       if (!wasIn && isIn) {
         ref.invalidate(historyProvider);
+        ref.invalidate(historySummaryProvider);
         ref.invalidate(smsControllerProvider);
         ref.invalidate(shellTabProvider);
       }

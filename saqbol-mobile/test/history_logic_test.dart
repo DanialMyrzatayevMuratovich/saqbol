@@ -18,40 +18,6 @@ HistoryItem _item(String id, String verdict, DateTime createdAt, {String channel
 void main() {
   final now = DateTime(2026, 10, 20, 15);
 
-  test('weekly stats count only the last seven days', () {
-    final items = [
-      _item('1', 'scam', now.subtract(const Duration(hours: 1))),
-      _item('2', 'suspicious', now.subtract(const Duration(days: 2))),
-      _item('3', 'safe', now.subtract(const Duration(days: 6))),
-      _item('4', 'scam', now.subtract(const Duration(days: 8))),
-    ];
-
-    final stats = weeklyStats(items, now);
-
-    expect(stats.checked, 3);
-    expect(stats.scam, 1);
-    expect(stats.suspicious, 1);
-  });
-
-  test('weekly stats of an empty history are zero', () {
-    final stats = weeklyStats(const [], now);
-    expect([stats.checked, stats.scam, stats.suspicious], [0, 0, 0]);
-  });
-
-  test('recent threats skip safe messages and come newest first', () {
-    final items = [
-      _item('old-scam', 'scam', now.subtract(const Duration(days: 3))),
-      _item('safe', 'safe', now),
-      _item('new-suspicious', 'suspicious', now.subtract(const Duration(hours: 2))),
-      _item('mid-scam', 'scam', now.subtract(const Duration(days: 1))),
-      _item('oldest-scam', 'scam', now.subtract(const Duration(days: 5))),
-    ];
-
-    final threats = recentThreats(items);
-
-    expect(threats.map((item) => item.id), ['new-suspicious', 'mid-scam', 'old-scam']);
-  });
-
   test('filters combine channel and verdict, empty means all', () {
     final items = [
       _item('sms-scam', 'scam', now),
