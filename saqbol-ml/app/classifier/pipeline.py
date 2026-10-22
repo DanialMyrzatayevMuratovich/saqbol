@@ -52,6 +52,7 @@ class ScamClassifier:
         triggers = list(dict.fromkeys(rule_triggers + self.model.explain(text)))
         if category is None:
             category = "other"
+            advice = rules.OTHER_ADVICE
 
         return ClassificationResult(
             verdict=verdict,

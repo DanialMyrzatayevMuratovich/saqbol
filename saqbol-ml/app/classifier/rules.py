@@ -1,4 +1,7 @@
 SAFE_ADVICE = "Сообщение выглядит безопасным, но всегда сверяйте отправителя."
+# For a scam or suspicious verdict that came from the model alone, with no rule
+# to name the category.
+OTHER_ADVICE = "Сообщение выглядит подозрительно. Не переходите по ссылкам, не сообщайте коды и не переводите деньги."
 
 CATEGORY_RULES = [
     {
@@ -9,6 +12,10 @@ CATEGORY_RULES = [
             "карта заблокирована", "картаңыз бұғатталды", "служба безопасности",
             "қауіпсіздік қызметі", "продиктуйте код", "назовите код", "сообщите код",
             "отдел безопасности",
+            "code from the sms", "code from sms", "sms code", "one-time code",
+            "card has been blocked", "card is blocked", "security service",
+            "security department", "tell me the code", "tell us the code",
+            "share the code", "dictate the code",
         ],
     },
     {
@@ -17,6 +24,9 @@ CATEGORY_RULES = [
         "triggers": [
             "перейдите по ссылке", "войдите по ссылке", "kaspii.kz", "kaspi-kz",
             "egov-kz", "подтвердите данные", "обновите данные", "по ссылке",
+            "follow the link", "click the link", "click on the link",
+            "log in via the link", "confirm your details", "update your details",
+            "verify your details", "via the link",
         ],
     },
     {
@@ -26,6 +36,11 @@ CATEGORY_RULES = [
             "вы выиграли", "поздравляем", "құттықтаймыз", "сыйлық", "ұтып алдыңыз",
             "приз", "компенсация", "оплатите комиссию", "переведите комиссию",
             "выплата", "победитель",
+            # Not a bare "prize": it is a substring of scam domains
+            # (wb-kz-prize.shop) and would pull bank and delivery scams in here.
+            "you have won", "you've won", "you won", "congratulations",
+            "your prize", "a prize", "prize draw", "cash prize", "compensation",
+            "pay the fee", "pay a fee", "pay the commission", "payout", "winner",
         ],
     },
     {
@@ -35,6 +50,9 @@ CATEGORY_RULES = [
             "полиция", "прокуратура", "следователь", "уголовное дело",
             "оформлен кредит", "безопасный счёт", "переведите деньги",
             "переведите средства", "переведите на безопасный",
+            "police", "prosecutor", "investigator", "criminal case",
+            "loan has been taken out", "safe account", "transfer the money",
+            "transfer the funds", "transfer your money", "transfer to a safe",
         ],
     },
     {
@@ -43,6 +61,8 @@ CATEGORY_RULES = [
         "triggers": [
             "kaspi.link", "каспи перевод", "перевод kaspi", "оплата kaspi",
             "оплатите через каспи", "подтвердите оплату",
+            "kaspi transfer", "transfer via kaspi", "kaspi payment",
+            "pay via kaspi", "pay through kaspi", "confirm the payment",
         ],
     },
 ]

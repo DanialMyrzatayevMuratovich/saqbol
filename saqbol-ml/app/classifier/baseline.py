@@ -6,6 +6,10 @@ import numpy as np
 STOPWORDS = {
     "из", "по", "на", "в", "и", "с", "для", "от", "до", "за", "у", "о", "а",
     "что", "как", "это", "не", "вы", "мы", "он", "но",
+    "the", "an", "to", "of", "in", "on", "at", "by", "for", "from", "with",
+    "and", "or", "is", "are", "was", "be", "been", "has", "have", "it", "its",
+    "this", "that", "you", "your", "we", "our", "us", "if", "not", "do", "will",
+    "as", "via", "here",
 }
 
 

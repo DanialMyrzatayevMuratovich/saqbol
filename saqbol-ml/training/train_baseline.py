@@ -16,9 +16,10 @@ MODEL_DIR = os.getenv("MODEL_DIR", "models")
 MODEL_VERSION = os.getenv("MODEL_VERSION", "baseline-tfidf-logreg-v1")
 
 
-def load_dataset(path: str) -> tuple[list[str], list[int]]:
+def load_dataset(path: str) -> tuple[list[str], list[int], list[str]]:
     texts: list[str] = []
     labels: list[int] = []
+    originals: list[str] = []
     with open(path, encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
@@ -27,7 +28,34 @@ def load_dataset(path: str) -> tuple[list[str], list[int]]:
             # surface through the mid probability band, which is where the
             # service's SUSPICIOUS_THRESHOLD picks them up.
             labels.append(1 if row["label"] == "scam" else 0)
-    return texts, labels
+            originals.append(row.get("translated_from") or "")
+    return texts, labels, template_families(texts, originals)
+
+
+def template_families(texts: list[str], originals: list[str]) -> list[str]:
+    """Return one group id per row: rows that must stay in the same fold.
+
+    A row joins every other row with the same template, and a translation
+    also joins the row it was translated from. Different Kazakh or Russian
+    templates often collapse into the same English sentence, so the English
+    template links them too. Grouping by the original's template alone let 99
+    such families (839 rows) span folds.
+    """
+    parent: dict[str, str] = {}
+
+    def find(key: str) -> str:
+        parent.setdefault(key, key)
+        while parent[key] != key:
+            parent[key] = parent[parent[key]]
+            key = parent[key]
+        return key
+
+    own = [template_of(text) for text in texts]
+    for template, original in zip(own, originals):
+        find(template)
+        if original:
+            parent[find(template)] = find(template_of(original))
+    return [find(template) for template in own]
 
 
 def template_of(text: str) -> str:
@@ -52,10 +80,9 @@ def build_pipeline() -> Pipeline:
 
 
 def main() -> None:
-    texts, labels = load_dataset(DATA_PATH)
+    texts, labels, groups = load_dataset(DATA_PATH)
     pipeline = build_pipeline()
 
-    groups = [template_of(text) for text in texts]
     predictions = cross_val_predict(
         pipeline, texts, labels, cv=GroupKFold(n_splits=5), groups=groups
     )

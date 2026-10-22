@@ -83,7 +83,7 @@ native user-generated corpora. Serek et al. [7] use real Russian, Kazakh and Eng
 messages with the same TF-IDF baselines and recall-first evaluation as SaqBol, but only 189 of
 them. Radolda et al. [8] generate 720 synthetic messages and get F1 = 1.00, which they attribute
 "entirely to the artificial lexical gap" between template classes. Our own baseline behaves the
-same way: recall falls from 0.97 on the template-heavy corpus to about 0.5 on real messages
+same way: recall falls from 0.96 on the template-heavy corpus to about 0.5 on real messages
 ([verification plan](09-verification-plan.md#93-current-baseline)). Taken together, [6]–[8] mean
 that a high score on translated or synthetic data is not evidence of real-world performance.
 
