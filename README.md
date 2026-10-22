@@ -140,6 +140,7 @@ cd saqbol-web && npm install && npm test
 
 ML evaluation: `cd saqbol-ml && python training/evaluate.py` (writes to `saqbol-ml/experiments/`).
 The full test and evaluation plan is in [docs/09-verification-plan.md](docs/09-verification-plan.md).
+All checks in one command: `python3 scripts/pipeline.py run checks` (skips toolchains you do not have).
 
 ## Repository layout
 
@@ -152,7 +153,16 @@ docs/             Analysis and design documents
 diagrams/         PlantUML sources (src/) and exports (export/)
 k8s/, k3s/        Kubernetes manifests and deploy scripts
 .github/          CI workflow, pull request template
+scripts/          Repository tooling: pipeline runner, agent mailbox, their tests
+.claude/          Claude Code skills and hooks shared by the team
 ```
+
+## AI agents
+
+Both team members work with an AI coding agent. Shared skills and hooks keep the agents on the
+team rules, `scripts/pipeline.py` runs the checks and the ML pipeline, and the agents exchange tasks
+and replies through a git mailbox (`scripts/mailbox.py`, branch `agent-mailbox`). See
+[docs/agents.md](docs/agents.md).
 
 ## Contributing
 
@@ -161,3 +171,12 @@ pull request into `main` reviewed by the other team member. See
 [project management](docs/10-project-management.md#102-tools-and-workflow).
 
 Secrets (`.env`, tokens, keys) are never committed; use `.env.example` with placeholder values.
+
+## License
+
+The code and the team's own documents and data are released under the [MIT License](LICENSE),
+© 2026 Danial Myrzatayev and Asylbek Abdibay. Third-party data in `saqbol-ml/data` keeps the terms
+of its source: the Kazakh rows taken from
+[Yerassyl04/Spam-kazakh](https://github.com/Yerassyl04/Spam-kazakh) have no licence, so their author
+keeps all rights (details in the dataset card, `docs/12-dataset-card.md`, and task SAQ-83).
+`.claude/skills/grilling/` is by Matt Pocock under the MIT License (see its `LICENSE`).

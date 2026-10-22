@@ -1,0 +1,5 @@
+#!/bin/sh
+# SaqBol: no commits on main, no .env files, keys or token-like text in staged changes.
+# Opt in once per clone: git config core.hooksPath .githooks
+py=$(command -v python3 || command -v python) || exit 0
+exec "$py" "$(git rev-parse --show-toplevel)/.claude/hooks/guard.py" --git-hook pre-commit

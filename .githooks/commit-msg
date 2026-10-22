@@ -1,0 +1,5 @@
+#!/bin/sh
+# SaqBol: the subject must start with "SAQ-<id>: " (CONTRIBUTING.md); AI co-author lines are removed.
+# Opt in once per clone: git config core.hooksPath .githooks
+py=$(command -v python3 || command -v python) || exit 0
+exec "$py" "$(git rev-parse --show-toplevel)/.claude/hooks/guard.py" --git-hook commit-msg "$1"
