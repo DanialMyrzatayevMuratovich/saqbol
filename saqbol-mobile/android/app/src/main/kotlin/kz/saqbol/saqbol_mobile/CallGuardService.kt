@@ -11,10 +11,10 @@ import android.telecom.CallScreeningService
 import android.util.Log
 import androidx.annotation.RequiresApi
 import org.json.JSONObject
-import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledThreadPoolExecutor
 
 /**
  * Screens every incoming call and warns when the caller's number has a bad
@@ -26,57 +26,52 @@ import java.util.concurrent.Executors
 @RequiresApi(Build.VERSION_CODES.N)
 class CallGuardService : CallScreeningService() {
 
-    private val executor = Executors.newSingleThreadExecutor()
+    private val gate = ScreeningGate(
+        lookups = Executors.newFixedThreadPool(ScreeningGate.LOOKUP_THREADS),
+        // A deadline whose lookup answered first leaves the queue at once.
+        deadlines = ScheduledThreadPoolExecutor(1).apply { removeOnCancelPolicy = true },
+        log = { message, error -> Log.w(TAG, message, error) },
+    )
 
     override fun onScreenCall(callDetails: Call.Details) {
-        // Never hold up the call: allow it immediately, then warn out of band if
-        // the lookup comes back bad. Android only grants a few seconds here.
+        // Answer only after the lookup, or when the per-call deadline passes.
+        // Telecom unbinds the service as soon as it has an answer, and an app
+        // in the background can then be frozen before the warning is shown.
+        // The answer is always "allow", so the call itself is never blocked.
+        gate.screen(
+            number = callDetails.handle?.schemeSpecificPart,
+            lookup = ::fetchRisk,
+            onResult = { number, risk ->
+                if (risk.score >= RISK_THRESHOLD) warn(number, risk)
+            },
+            respond = { allow(callDetails) },
+        )
+    }
+
+    private fun allow(callDetails: Call.Details) {
         respondToCall(callDetails, CallResponse.Builder().build())
-
-        val number = callDetails.handle?.schemeSpecificPart ?: return
-        if (number.isBlank()) return
-
-        executor.execute {
-            try {
-                val risk = fetchRisk(number) ?: return@execute
-                if (risk.score >= RISK_THRESHOLD) {
-                    warn(number, risk)
-                }
-            } catch (error: Exception) {
-                // Offline or backend down — screening is best-effort.
-                Log.w(TAG, "reputation lookup failed", error)
-            }
-        }
     }
 
     private data class Risk(val score: Double, val reports: Int)
 
-    private fun fetchRisk(number: String): Risk? {
+    private fun fetchRisk(number: String, cancellation: Cancellation): Risk? {
         val prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val baseUrl = prefs.getString(KEY_API_BASE, null) ?: return null
         val token = prefs.getString(KEY_TOKEN, null) ?: return null
 
         val encoded = URLEncoder.encode(number, "UTF-8")
-        val connection = URL("$baseUrl/numbers/$encoded/risk").openConnection()
-                as HttpURLConnection
-        connection.apply {
-            requestMethod = "GET"
-            setRequestProperty("Authorization", "Bearer $token")
-            connectTimeout = 4000
-            readTimeout = 4000
-        }
+        val body = ReputationHttp.get(
+            URL("$baseUrl/numbers/$encoded/risk"),
+            token,
+            cancellation,
+        ) ?: return null
 
-        try {
-            if (connection.responseCode != HttpURLConnection.HTTP_OK) return null
-            val payload = JSONObject(connection.inputStream.bufferedReader().readText())
-            if (!payload.optBoolean("known", false)) return null
-            return Risk(
-                score = payload.optDouble("risk_score", 0.0),
-                reports = payload.optInt("reports_count", 0),
-            )
-        } finally {
-            connection.disconnect()
-        }
+        val payload = JSONObject(body)
+        if (!payload.optBoolean("known", false)) return null
+        return Risk(
+            score = payload.optDouble("risk_score", 0.0),
+            reports = payload.optInt("reports_count", 0),
+        )
     }
 
     @SuppressLint("MissingPermission")
@@ -105,7 +100,7 @@ class CallGuardService : CallScreeningService() {
     }
 
     override fun onDestroy() {
-        executor.shutdown()
+        gate.shutdown()
         super.onDestroy()
     }
 
