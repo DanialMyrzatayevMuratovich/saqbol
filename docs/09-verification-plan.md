@@ -16,13 +16,13 @@ The project aim ([proposal](01-project-proposal.md#13-aim)) is reached when we c
 | Level | What | Tools | Exists today | To add |
 |---|---|---|---|---|
 | Unit | Token issuing / validation, mock classifier (Go); rule engine and pipeline thresholds (Python); highlighted triggers and locale behavior (Flutter); verdict labels (web) | `go test`, `pytest`, `flutter test`, `vitest` | Test sources exist in all four components; record executed counts and results against the submitted commit, rather than combining counts from pending branches | Store layer, reputation updates, batch check |
-| API integration | Every `/api/v1` endpoint: status codes, validation, auth (401), admin role (403), ownership (404 on another user's message) | Go `httptest` + mock classifier + test Postgres | — | SAQ-34 |
+| API integration | Every `/api/v1` endpoint: status codes, validation, auth (401), admin role (403), ownership (404 on another user's message) | Go `httptest` + mock classifier + test Postgres | None yet | SAQ-34 |
 | End-to-end | Fresh clone → `docker compose up` → register → SMS check → verdict `scam` with `model_version` | Smoke script from `CLAUDE.md` | Manual | Run in CI on pull requests |
 | ML evaluation | Protocol in 9.4 | `training/evaluate.py`, Colab notebook | Partial (9.3) | SAQ-22 |
-| Real-time call | Protocol in 9.5 | Scripted calls, device logs | — | SAQ-23, SAQ-24 |
-| Performance | Protocol in 9.6 | `hey` or a Go/Python load script; backend Prometheus metrics | — | SAQ-24 |
+| Real-time call | Protocol in 9.5 | Scripted calls, device logs | None yet | SAQ-23, SAQ-24 |
+| Performance | Protocol in 9.6 | `hey` or a Go/Python load script; backend Prometheus metrics | None yet | SAQ-24 |
 | Device | Android: SMS permission, inbox scan, incoming SMS notification, call screening on at least 2 devices (Android 10+); iOS: manual check; live-call path subject to per-locale capability tests | Physical devices | No versioned physical-device result is recorded here; Asylbek has no suitable Android phone available as of 22 October | Borrowed devices and a checklist per release, including unavailable-locale behaviour |
-| Usability | Protocol in 9.7 | SUS questionnaire, observation notes | — | SAQ-30 |
+| Usability | Protocol in 9.7 | SUS questionnaire, observation notes | None yet | SAQ-30 |
 | Security | Secrets not in Git, JWT secrets required, rate limit, admin role, input limits | Code review, `gitleaks`, manual API checks | Partly | Before each pre-defense |
 
 CI builds, lints and runs the unit tests of all four apps on every push and pull request since

@@ -123,7 +123,7 @@ and explains each verdict to the user in time to prevent the loss.
 | Dataset in reviewed `main` | 2,248 rows: 2,020 template examples, 184 student-project examples and 44 team-authored seeds; no verified received-SMS evaluation cohort |
 | Dataset in the unmerged ML branch | 4,457 rows including 2,209 English translations; a different version, not evidence of authentic received SMS |
 | Analysis and design documentation | This pre-defense |
-| Primary user evidence | Interviews/client agreement pending; no findings inferred from the empty interview table |
+| Primary user evidence | Two informal conversations recorded (§2.3.4); structured interviews and client agreement pending |
 | Supervisor review | Feedback pending; the log does not establish that review has happened |
 
 These are prototype and planning deliverables for 24 October, not a claim that all final-project

@@ -1,8 +1,8 @@
 # 2. Evidence of Relevance
 
 This page collects published statistics (secondary data), analysis of available data, and a
-protocol for interviews with potential users. No completed interview records or actual-client
-agreement are documented here. The last section separates **verified findings** from
+protocol for interviews with potential users, with two informal conversations recorded so far.
+No structured interview records or actual-client agreement are documented yet. The last section separates **verified findings** from
 **assumptions** that still need checking.
 
 ## 2.1 Published statistics for Kazakhstan
@@ -66,8 +66,9 @@ and documenting authentic messages (SAQ-19) remains necessary for the proposed e
 
 ## 2.3 Interviews with potential users
 
-**Status:** protocol prepared; completed discussions and their findings are **pending evidence**
-(task SAQ-3, Asylbek Abdibay). The blank table in §2.3.4 is a template, not proof of interviews.
+**Status:** protocol prepared. Two informal conversations were held and are recorded in §2.3.4
+(I1, I2); they did not follow the full guide in §2.3.2. Structured interviews with at least three
+more participants are **pending evidence** (task SAQ-3, Asylbek Abdibay).
 No substantive actual-client agreement is documented as an alternative.
 
 ### 2.3.1 Who we interview (3–5 people, at least one from each of the first three groups)
@@ -110,11 +111,13 @@ and say that no names or phone numbers will be published.
 
 | ID | Profile | Date | Key findings (facts the participant reported) | Impact on requirements |
 |---|---|---|---|---|
-| I1 | | | | |
-| I2 | | | | |
-| I3 | | | | |
-| I4 | | | | |
-| I5 | | | | |
+| I1 | P5: older woman, grandmother of a team member. Informal conversation in person, held by Danial Myrzatayev | Early October 2026 | Received WhatsApp messages and calls saying that her account was about to be hacked, and nearly followed the instructions; no money was lost. After a demonstration of the MVP she said that such a warning would have helped her. Agreed to support the project and to be mentioned anonymously | Fraud also comes through WhatsApp messages and calls, which the automatic SMS and call protection does not cover (out of scope, §1.6). For this channel the user needs a manual check: paste or share the message (FR-5; sharing from other apps, SAQ-52) and live analysis of a call on speakerphone (FR-9) |
+| I2 | P5: older woman, acquaintance of the family. Informal conversation in person, held by Danial Myrzatayev | Early October 2026 | Same scheme: WhatsApp messages and calls about an account that was "about to be hacked"; nearly deceived, no money was lost. After the MVP demonstration she said that the app would have helped her. Agreed to support the project and to be mentioned anonymously | Same as I1; supports raising the priority of sharing a message from other apps (SAQ-52) |
+
+Relatives of the team have themselves nearly been deceived in this way, and protecting them is part of
+the motivation for SaqBol. Because I1 and I2 are the team's own relatives and acquaintances and the
+conversations were informal, these findings are anecdotal: they do not verify the assumptions in §2.4.
+Structured interviews following §2.3.2 with at least three more participants are planned (SAQ-3).
 
 ## 2.4 Verified findings vs assumptions
 
