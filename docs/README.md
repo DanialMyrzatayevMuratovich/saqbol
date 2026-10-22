@@ -13,6 +13,7 @@
 | 9 | [Verification and evaluation plan](09-verification-plan.md) | Test levels, current baseline, ML protocol, call and usability evaluation |
 | 10 | [Project management and risks](10-project-management.md) | Roles, workflow, milestones, task plan, risks, dependencies |
 | 11 | [Supervisor feedback](11-supervisor-feedback.md) | Review log |
+| 12 | [Dataset card and labelling guideline](12-dataset-card.md) | Data sources and licences, composition, what "real" means, labels, annotation and agreement |
 
 Diagram sources: [`diagrams/src/`](../diagrams/src) · exports: [`diagrams/export/`](../diagrams/export)
 
