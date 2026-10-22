@@ -157,7 +157,7 @@ k8s/, k3s/        Kubernetes manifests and deploy scripts
 ## Contributing
 
 Every change is linked to a YouTrack task: branch `SAQ-<id>-<slug>`, commit `SAQ-<id>: …`,
-pull request into `main` reviewed by the other team member. See
-[project management](docs/10-project-management.md#102-tools-and-workflow).
+pull request into `main` approved by the other team member (`main` is protected). Full rules:
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 Secrets (`.env`, tokens, keys) are never committed; use `.env.example` with placeholder values.
