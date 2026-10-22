@@ -1,0 +1,24 @@
+{
+  "members": {
+    "danial": {
+      "name": "Danial Myrzatayev",
+      "github": "DanialMyrzatayevMuratovich",
+      "youtrack": "admin",
+      "emails": [
+        "myrzataevddd0606@gmail.com",
+        "179967465+DanialMyrzatayevMuratovich@users.noreply.github.com"
+      ],
+      "role": "Team lead: backend (Go), ML service and experiments, infrastructure and CI, documentation"
+    },
+    "asylbek": {
+      "name": "Asylbek Abdibay",
+      "github": "Asylbek2006",
+      "youtrack": "Asylbek_Abdibay",
+      "emails": [
+        "asylbekabdibay@gmail.com",
+        "166900995+Asylbek2006@users.noreply.github.com"
+      ],
+      "role": "Mobile and web features, user research, real-data collection, device testing, code review"
+    }
+  }
+}

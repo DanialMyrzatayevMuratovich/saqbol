@@ -51,7 +51,10 @@
       "Bash(chmod +x \"/Users/danialmyrzatayev/Desktop/SaqBol /k8s/deploy.sh\")",
       "Bash(go test *)",
       "Bash(npm test *)",
-      "Bash(python3 scripts/pipeline.py *)"
+      "Bash(python3 scripts/pipeline.py *)",
+      "Bash(python3 scripts/mailbox.py inbox*)",
+      "Bash(python3 scripts/mailbox.py show *)",
+      "Bash(python3 scripts/mailbox.py whoami)"
     ],
     "additionalDirectories": [
       "/Users/danialmyrzatayev/Desktop/SaqBol /saqbol-backend",
@@ -106,6 +109,28 @@
     ]
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 20,
+            "command": "\"$(command -v python3 || command -v python)\" \"$CLAUDE_PROJECT_DIR/scripts/mailbox.py\" hook session"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 10,
+            "command": "\"$(command -v python3 || command -v python)\" \"$CLAUDE_PROJECT_DIR/scripts/mailbox.py\" hook prompt"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
