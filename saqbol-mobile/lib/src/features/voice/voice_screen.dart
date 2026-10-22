@@ -190,19 +190,23 @@ class _ListenButtonState extends State<_ListenButton> with SingleTickerProviderS
           child: Stack(
             alignment: Alignment.center,
             children: [
-              SizedBox(
-                width: 232,
-                height: 232,
-                child: TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0, end: active ? state.probability : 0),
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, value, _) => CircularProgressIndicator(
-                    value: active ? value : 1,
-                    strokeWidth: 12,
-                    strokeCap: StrokeCap.round,
-                    color: ringColor,
-                    backgroundColor: c.surfaceRaised,
+              // The percentage is read out by the label inside; the ring would
+              // only add a bare number to the button's description.
+              ExcludeSemantics(
+                child: SizedBox(
+                  width: 232,
+                  height: 232,
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: active ? state.probability : 0),
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, value, _) => CircularProgressIndicator(
+                      value: active ? value : 1,
+                      strokeWidth: 12,
+                      strokeCap: StrokeCap.round,
+                      color: ringColor,
+                      backgroundColor: c.surfaceRaised,
+                    ),
                   ),
                 ),
               ),

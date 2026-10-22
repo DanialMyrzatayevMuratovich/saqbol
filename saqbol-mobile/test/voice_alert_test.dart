@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:saqbol_mobile/src/features/voice/call_alert_screen.dart';
 import 'package:saqbol_mobile/src/features/voice/voice_controller.dart';
 import 'package:saqbol_mobile/src/features/voice/voice_models.dart';
 
@@ -46,5 +47,22 @@ void main() {
     // The risk is still shown, only the full-screen alert is silenced.
     expect(state.probability, 0.95);
     expect(state.verdict, 'scam');
+  });
+
+  test('the alert shows the longest phrases, without words already inside them', () {
+    final reasons = topAlertReasons(const [
+      'bank',
+      'code from the sms',
+      'card has been blocked',
+      'security',
+      'security service',
+      'tell us the code',
+      'bank security',
+      'service',
+    ]);
+
+    expect(reasons, ['card has been blocked', 'code from the sms', 'security service', 'tell us the code']);
+    expect(topAlertReasons(const ['код', 'код']), ['код']);
+    expect(topAlertReasons(const []), isEmpty);
   });
 }

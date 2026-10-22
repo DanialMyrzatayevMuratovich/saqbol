@@ -5,6 +5,21 @@ import '../../core/strings.dart';
 import '../../shared/app_theme.dart';
 import 'voice_controller.dart';
 
+/// The trigger phrases worth showing in the alert: longest first, without
+/// words already inside a shown phrase ("bank" next to "bank security"), at
+/// most [max], so the advice below stays on screen.
+List<String> topAlertReasons(List<String> triggers, {int max = 4}) {
+  final sorted = triggers.toSet().toList()..sort((a, b) => b.length.compareTo(a.length));
+  final picked = <String>[];
+  for (final trigger in sorted) {
+    final lower = trigger.toLowerCase();
+    if (picked.any((shown) => shown.toLowerCase().contains(lower))) continue;
+    picked.add(trigger);
+    if (picked.length == max) break;
+  }
+  return picked;
+}
+
 /// Full-screen warning shown the moment a live call crosses the scam threshold.
 /// Always dark red, whatever the theme: it has to stop the user mid-call.
 class CallAlertScreen extends ConsumerWidget {
@@ -22,6 +37,7 @@ class CallAlertScreen extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final advice = strings.advice(state.category, state.advice);
     final percent = (state.probability * 100).round();
+    final reasons = topAlertReasons(state.triggers);
 
     return Scaffold(
       backgroundColor: _background,
@@ -59,10 +75,10 @@ class CallAlertScreen extends ConsumerWidget {
               Expanded(
                 child: ListView(
                   children: [
-                    if (state.triggers.isNotEmpty) ...[
+                    if (reasons.isNotEmpty) ...[
                       Text(strings.alertReasons, style: text.titleMedium?.copyWith(color: _ink)),
                       const SizedBox(height: Gap.s),
-                      for (final trigger in state.triggers)
+                      for (final trigger in reasons)
                         Padding(
                           padding: const EdgeInsets.only(bottom: Gap.s),
                           child: Row(
