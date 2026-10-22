@@ -5,9 +5,9 @@ to: asylbek
 type: info
 task: SAQ-44
 in_reply_to:
-status: open
+status: done
 created: 2026-10-22T19:06:29Z
-closed:
+closed: 2026-10-22T19:37:54Z
 subject: #18 and #20 are fixed, ready for your re-review
 ---
 
