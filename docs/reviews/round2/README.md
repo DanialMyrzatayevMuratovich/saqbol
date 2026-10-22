@@ -11,6 +11,7 @@ this directory; replace the example sibling-worktree paths with your local paths
 | Probe | Reviewed PR and commit | Requirements |
 |---|---|---|
 | [ML grouping audit](audit_ml_grouping_readonly.py) | #14 `7f7dec98aee586ae3f46ddec294af3ce26d723bc`; also compatible with #25 `1d6a0f928e4257d27051bab7486fbdb578bea714` | Python 3.10+, NumPy, scikit-learn, Git; notebook-pinned commit `66575f3839f0a03d6871920c9ebc24d900388335` present locally |
+| [Call response deadline](PR18WarningDeadlineProbe.kt) | #18 `eb5c7fabb31f955045851f9d5ccca5c4bb75a111` | Kotlin CLI and Java 17+; no Android SDK or network required |
 | [Database guard parser](pr21_database_guard_probe.go) | #21 `f1063966f25c1ccd5e491a8b8020dbd5f66bb038` | Python 3.10+ launcher, installed Go 1.25+, cached modules from the reviewed `go.mod`/`go.sum` (pgx v5.7.1) |
 | [Latency probes](latency_review_test.go), [batch rejection](latency_batch_review_test.go) | #23 `2f66a958827ec262313b6da47e0bcc433677d4bb` | Python launcher, installed Go 1.25+, cached reviewed modules, permission to open a loopback HTTP listener |
 | [Windows wrapper probe](probe_pipeline_windows.py) | #28 `2bfa12be3abfdb450d938d039bd49e74393961eb` | Windows, Python 3.10+, Git, installed npm resolving to `.cmd` or `.bat` on PATH |
@@ -108,3 +109,28 @@ Both launchers use standard temporary directories by default. An optional
 `--scratch-dir ../review-output/new-directory` retains logs/copies outside the reviewed
 worktree, including in environments where the default temporary directory is restricted.
 The named directory must not already exist. Neither launcher deletes or edits the reviewed tree.
+
+## Call response deadline
+
+First confirm that `git -C ../review-pr18 rev-parse HEAD` matches the pinned revision above.
+With `kotlinc` and `java` on PATH, compile the unchanged production gate and this probe into
+a new scratch JAR outside the reviewed tree (create the output directory first):
+
+```text
+kotlinc ../review-pr18/saqbol-mobile/android/app/src/main/kotlin/kz/saqbol/saqbol_mobile/ScreeningGate.kt docs/reviews/round2/PR18WarningDeadlineProbe.kt -jvm-target 17 -include-runtime -d ../review-output/pr18-deadline.jar
+java -jar ../review-output/pr18-deadline.jar
+```
+
+The probe returns an immediate lookup result but holds its result callback with a bounded
+latch. At this head, the gate cancels its 3,500 ms fallback before that callback completes.
+Observed: no response within five seconds of callback entry; after release, exactly one
+response at 5,024 ms from entry. Exit 0 means that this historical counterexample reproduced.
+A corrected gate should invalidate the probe's final assertions; turn the observation into
+a regression assertion when validating a fix rather than treating this historical exit code
+as a success criterion for corrected code.
+
+The actual run used Java 22 and installed Kotlin 2.0.21 with JVM target 17; the project pins
+Kotlin 2.2.20. This probe establishes callback-budget behavior, not Android notification
+latency, an APK build, or incoming-call behavior on a physical phone. The original ten-test
+JVM suite separately passed nine tests; a mixed-race-winner assertion failed once and passed
+two focused reruns. All 300 calls in that failed test still answered exactly once.
