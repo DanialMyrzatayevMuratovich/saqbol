@@ -29,24 +29,34 @@ class CallGuardService : CallScreeningService() {
     private val executor = Executors.newSingleThreadExecutor()
 
     override fun onScreenCall(callDetails: Call.Details) {
-        // Never hold up the call: allow it immediately, then warn out of band if
-        // the lookup comes back bad. Android only grants a few seconds here.
-        respondToCall(callDetails, CallResponse.Builder().build())
+        val number = callDetails.handle?.schemeSpecificPart
+        if (number.isNullOrBlank()) {
+            allow(callDetails)
+            return
+        }
 
-        val number = callDetails.handle?.schemeSpecificPart ?: return
-        if (number.isBlank()) return
-
+        // Respond only after the lookup. Telecom unbinds the service as soon as
+        // it has an answer, and an app in the background is then frozen before
+        // the request goes out, so the warning never came. The call is still
+        // always allowed, and the timeouts below keep the lookup inside the
+        // few seconds Telecom waits for an answer.
         executor.execute {
             try {
-                val risk = fetchRisk(number) ?: return@execute
-                if (risk.score >= RISK_THRESHOLD) {
+                val risk = fetchRisk(number)
+                if (risk != null && risk.score >= RISK_THRESHOLD) {
                     warn(number, risk)
                 }
             } catch (error: Exception) {
                 // Offline or backend down — screening is best-effort.
                 Log.w(TAG, "reputation lookup failed", error)
+            } finally {
+                allow(callDetails)
             }
         }
+    }
+
+    private fun allow(callDetails: Call.Details) {
+        respondToCall(callDetails, CallResponse.Builder().build())
     }
 
     private data class Risk(val score: Double, val reports: Int)
@@ -62,8 +72,9 @@ class CallGuardService : CallScreeningService() {
         connection.apply {
             requestMethod = "GET"
             setRequestProperty("Authorization", "Bearer $token")
-            connectTimeout = 4000
-            readTimeout = 4000
+            // Together under Telecom's ~5 s screening limit.
+            connectTimeout = 1500
+            readTimeout = 2000
         }
 
         try {
