@@ -1,0 +1,32 @@
+{
+  "task": "SAQ-62",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "data": "invented browser-intercepted fixtures; no backend or real authentication",
+  "scope": "User column display only. API response and browser memory still contain full values.",
+  "page_errors": [],
+  "blocked_requests": [],
+  "rows": [
+    {
+      "case": "complete number",
+      "user_display": "+7 700 *** ** 01",
+      "sender_display": "+77000000999"
+    },
+    {
+      "case": "formatted number",
+      "user_display": "+7 771 *** ** 99",
+      "sender_display": "+77000000888"
+    },
+    {
+      "case": "unsupported value",
+      "user_display": "—",
+      "sender_display": "—"
+    }
+  ],
+  "browser_version": "146.0.7680.165",
+  "raw_user_values_absent_from_dom_and_attributes": true,
+  "passed": true,
+  "owned_server_stopped": true
+}
