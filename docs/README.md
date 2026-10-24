@@ -3,8 +3,9 @@
 Read the [implementation and evidence status](implementation-evidence.md) before presenting
 capability or evaluation claims. It distinguishes the reviewed `main` baseline from unmerged
 ML/mobile work, Kazakh text processing from speech recognition, and course/seed examples from
-authenticated received SMS. Two informal user conversations are recorded; structured interviews,
-client agreement and supervisor feedback are still pending.
+authenticated received SMS. Two informal user conversations are recorded; structured interviews
+and client agreement remain pending. Written supervisor feedback was supplied and recorded on
+24 October 2026; see the [review and response log](11-supervisor-feedback.md).
 
 | # | Document | Contents |
 |---|---|---|

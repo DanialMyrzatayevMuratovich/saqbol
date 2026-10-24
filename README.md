@@ -36,6 +36,10 @@ fine-tuned XLM-RoBERTa on real data; a real-time call-analysis pipeline with mea
 
 **Supervisor:** Zhibek Nurzhanovna Sarsenova
 
+**Supervisor review:** [written feedback and response log](docs/11-supervisor-feedback.md),
+recorded on 24 October 2026 after submission. The supervisor recommends a grade of "good";
+user-research evidence remains incomplete. This is not a final committee grade.
+
 ## Links
 
 - **YouTrack:** [project SAQ](https://saqbol.youtrack.cloud/issues/SAQ) · [Kanban board](https://saqbol.youtrack.cloud/agiles/204-1/current).
@@ -73,7 +77,7 @@ Details: [proposal §1.6](docs/01-project-proposal.md#16-scope).
 | ML branch data | 4,457 rows after adding 2,209 deduplicated English translations; separate, unmerged snapshot ([versions](docs/implementation-evidence.md#dataset-provenance-and-versions)) |
 | Detection quality on real received SMS | Not established. The reported 0.511 recall is an exploratory result on the 228 course/seed examples, not real-world recall ([details](docs/09-verification-plan.md#93-current-baseline)) |
 | User interviews / client agreement | Not yet supplied; the interview guide is preparation, not completed user evidence |
-| Supervisor feedback | Not yet supplied; the feedback log is awaiting a substantive review |
+| Supervisor feedback | Written review supplied; [transcription and decisions](docs/11-supervisor-feedback.md) recorded on 24 October 2026. Follow-up documentation awaits review/merge; SAQ-3 user evidence remains open |
 
 ## Architecture
 
