@@ -7,6 +7,7 @@ import { NavBar } from "@/components/NavBar";
 import { UnauthorizedError, fetchFlaggedMessages } from "@/lib/api";
 import { getAccessToken } from "@/lib/auth";
 import { categoryLabel } from "@/lib/labels";
+import { maskUserPhone } from "@/lib/phone";
 import type { AdminMessage } from "@/lib/types";
 
 const filters = [
@@ -116,7 +117,7 @@ export default function MessagesPage() {
                         {item.text}
                       </td>
                       <td className="px-4 py-3">{item.source_number || "—"}</td>
-                      <td className="px-4 py-3">{item.phone}</td>
+                      <td className="px-4 py-3">{maskUserPhone(item.phone)}</td>
                       <td className="px-4 py-3 text-right">{Math.round(item.probability * 100)}%</td>
                     </tr>
                   ))
