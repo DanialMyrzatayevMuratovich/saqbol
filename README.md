@@ -38,7 +38,9 @@ fine-tuned XLM-RoBERTa on real data; a real-time call-analysis pipeline with mea
 
 ## Links
 
-- **YouTrack:** [project SAQ](https://saqbol.youtrack.cloud/issues/SAQ) · [Kanban board](https://saqbol.youtrack.cloud/agiles/204-1/current)
+- **YouTrack:** [project SAQ](https://saqbol.youtrack.cloud/issues/SAQ) · [Kanban board](https://saqbol.youtrack.cloud/agiles/204-1/current).
+  Open to guests in read-only mode: tasks, comments and the board can be viewed without an account
+  or sign-in; creating or editing tasks requires a team account.
 - **Documentation:** [docs/](docs/README.md): proposal, relevance evidence, literature review,
   system and technology comparisons, requirements, architecture, prototype, verification plan,
   project management, supervisor feedback
